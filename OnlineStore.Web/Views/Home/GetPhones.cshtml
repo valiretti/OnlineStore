@@ -1,0 +1,53 @@
+﻿@model IEnumerable<OnlineStore.Web.Models.PhoneViewModel>
+
+@{
+    ViewBag.Title = "GetPhones";
+}
+
+<h2>GetPhones</h2>
+
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.PhoneDescription)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Price)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                <input id="item" type="hidden" value="@item.Id" />
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PhoneDescription)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Price)
+            </td>
+            <td>
+                @Html.ActionLink("Delete", "DeletePhone", new { id = item.Id })
+            </td>
+            <td>
+                <a class="add_item" data-id="@item.Id" href="#">Добавить в корзину</a>
+            </td>
+        </tr>
+    }
+
+</table>
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+<div id="cart_content"></div>

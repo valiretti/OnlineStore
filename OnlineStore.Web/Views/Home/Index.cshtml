@@ -1,0 +1,33 @@
+﻿@model IEnumerable<OnlineStore.Web.Models.CompanyViewModel>
+@{
+    ViewBag.Title = "Get Companies";
+}
+<p></p>
+@Html.ActionLink("Мобильные телефоны", "GetPhones")
+<table class="table">
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.ActionLink(item.Name, "GetCertainBrendPhones", new { id = item.Id })
+            </td>
+            <td>
+                @Html.ActionLink("Delete", "DeleteCompany", new { id = item.Id })
+            </td>
+
+
+        </tr>
+    }
+
+</table>
+
+
+@Html.ActionLink("Add Phones", "AddPhone")
+<p></p>
+@Html.ActionLink("Add Companies", "AddCompany")
+
+
+
+
+
+

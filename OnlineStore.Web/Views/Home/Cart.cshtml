@@ -1,0 +1,15 @@
+﻿
+@{
+    ViewBag.Title = "Cart";
+}
+
+<h2>Корзина</h2>
+<h4>Список товаров</h4>
+
+<div id="cart_content"></div>
+@Scripts.Render("~/scripts/getItemsFromCart.js")
+<div class="form-group">
+    <div class="col-md-offset-2 col-md-10">
+        <input type="submit" value="Оформить заказ" class="btn btn-default" />
+    </div>
+</div>

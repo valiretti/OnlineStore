@@ -1,0 +1,70 @@
+﻿@model OnlineStore.Web.Models.RegisterModel
+
+@{
+    ViewBag.Title = "Register";
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+<div>
+    <h3>Регистрация пользователя</h3>
+    <hr />
+    @Html.ValidationSummary(true)
+
+    <div>
+        @Html.LabelFor(model=> model.Email)
+        <div>
+            @Html.EditorFor(model => model.Email)
+            @Html.ValidationMessageFor(model=>model.Email)
+          </div>
+    </div>
+
+    <div>
+        @Html.LabelFor(model=> model.Name)
+        <div>
+            @Html.EditorFor(model => model.Name)
+            @Html.ValidationMessageFor(model=>model.Name)
+        </div>
+    </div>
+
+    <div >
+        @Html.LabelFor(model=>model.Password)
+        <div >
+            @Html.EditorFor(model => model.Password)
+            @Html.ValidationMessageFor(model=>model.Password)
+        </div>
+    </div>
+
+    <div >
+       @Html.LabelFor(model=>model.ConfirmPassword)
+        <div>
+            @Html.EditorFor(model => model.ConfirmPassword)
+            @Html.ValidationMessageFor(model=>model.ConfirmPassword)
+        </div>
+    </div>
+
+    <div>
+        @Html.LabelFor(model=>model.PhoneNumber)
+        <div >
+            @Html.EditorFor(model => model.PhoneNumber)
+            @Html.ValidationMessageFor(model=>model.PhoneNumber)
+        </div>
+    </div>
+    
+    <div >
+        @Html.LabelFor(model=>model.Address)
+        <div>
+            @Html.EditorFor(model => model.Address)
+            @Html.ValidationMessageFor(model=>model.Address)
+        </div>
+    </div>
+   
+    <div >
+        <div > 
+            <input type="submit" class="btn btn-default" value="Зарегистрировать" />
+        </div>
+    </div>
+</div>
+}

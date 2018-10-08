@@ -1,0 +1,30 @@
+﻿@model OnlineStore.Web.Models.LoginModel
+
+@{
+    ViewBag.Title = "Login";
+}
+<h2>Вход</h2>
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div>
+        @Html.ValidationSummary(true)
+        <input type="hidden" name="returnUrl" value="@ViewBag.returnUrl" />
+        <p>
+            <label>Email</label><br />
+            @Html.EditorFor(x => x.Email)
+            @Html.ValidationMessageFor(model=>model.Email)
+        </p>
+        <p>
+            <label>Пароль</label><br />
+            @Html.EditorFor(x => x.Password)
+            @Html.ValidationMessageFor(model=>model.Password)
+        </p>
+        <p><button type="submit">Войти</button></p>
+    </div>
+    <div>
+        <p>Если у вас нет аккаунта - @Html.ActionLink("Региcтрация", "Register", "Account")</p>
+    </div>
+}
+
