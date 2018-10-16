@@ -24,10 +24,7 @@
     @foreach (var item in Model)
     {
         <tr>
-            <td>
-                <input id="item" type="hidden" value="@item.Id" />
-            </td>
-            <td>
+        <td>
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
@@ -50,4 +47,4 @@
 <div>
     @Html.ActionLink("Back to List", "Index")
 </div>
-<div id="cart_content"></div>
+

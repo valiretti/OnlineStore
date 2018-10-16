@@ -1,20 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Web;
 
-namespace OnlineStore.BLL.DTO
+namespace OnlineStore.Web.Models
 {
-    public class LineItemDto
+    public class LineItemViewModel
     {
         public int Id { get; set; }
         public int Count { get; set; }
 
         public int PhoneId { get; set; }
-        public PhoneDto PhoneDto { get; set; }
+        public PhoneViewModel PhoneViewModel { get; set; }
 
         public int OrderId { get; set; }
-        public OrderDto OrderDto { get; set; }
+        public OrderViewModel OrderViewModel { get; set; }
     }
 }

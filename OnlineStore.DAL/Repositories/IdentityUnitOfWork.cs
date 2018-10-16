@@ -80,6 +80,11 @@ namespace OnlineStore.DAL.Repositories
             await db.SaveChangesAsync();
         }
 
+        public void Save()
+        {
+            db.SaveChanges();
+        }
+
         public void Dispose()
         {
             Dispose(true);

@@ -202,7 +202,10 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\CompanyViewModel.cs" />
+    <Compile Include="Models\LineItemViewModel.cs" />
+    <Compile Include="Models\OrderViewModel.cs" />
     <Compile Include="Models\LoginModel.cs" />
+    <Compile Include="Models\OrderViewModelForCart.cs" />
     <Compile Include="Models\PhoneViewModel.cs" />
     <Compile Include="Models\RegisterModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -224,6 +227,7 @@
     </Content>
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
     <Content Include="Scripts\cart.js" />
+    <Content Include="Scripts\clearCart.js" />
     <Content Include="Scripts\getItemsFromCart.js" />
     <Content Include="Scripts\jquery-3.3.1.js" />
     <Content Include="Scripts\jquery-3.3.1.min.js" />
@@ -235,6 +239,7 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="Scripts\postCartItems.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -257,6 +262,12 @@
     <Content Include="Views\Home\DeleteCompany.cshtml" />
     <Content Include="Views\Home\GetPhones.cshtml" />
     <Content Include="Views\Home\Cart.cshtml" />
+    <Content Include="Views\Home\Order.cshtml" />
+    <Content Include="Views\Home\GetOrders.cshtml" />
+    <Content Include="Views\Home\GetLineItems.cshtml" />
+    <Content Include="Views\Home\AcceptOrder.cshtml" />
+    <Content Include="Views\Home\EditOrder.cshtml" />
+    <Content Include="Views\Home\DeleteOrder.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

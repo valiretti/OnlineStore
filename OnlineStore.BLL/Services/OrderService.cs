@@ -20,6 +20,7 @@ namespace OnlineStore.BLL.Services
             DataBase = dataBase;
         }
 
+
         public void AddPhone(PhoneDto phoneDto)
         {
             Company company = DataBase.Companies.Get(phoneDto.CompanyId);
@@ -31,9 +32,10 @@ namespace OnlineStore.BLL.Services
                     CompanyId = company.Id,
                     PhoneDescription = phoneDto.PhoneDescription,
                     Price = phoneDto.Price
+
                 };
                 DataBase.Phones.Create(phone);
-                DataBase.SaveAsync();
+                DataBase.Save();
             }
         }
 
@@ -43,7 +45,7 @@ namespace OnlineStore.BLL.Services
             if (phone != null)
             {
                 DataBase.Phones.Delete(phone.Id);
-                DataBase.SaveAsync();
+                DataBase.Save();
             }
         }
 
@@ -56,7 +58,7 @@ namespace OnlineStore.BLL.Services
                     Name = companyDto.Name
                 };
                 DataBase.Companies.Create(company);
-                DataBase.SaveAsync();
+                DataBase.Save();
             }
 
         }
@@ -67,7 +69,7 @@ namespace OnlineStore.BLL.Services
             if (company != null)
             {
                 DataBase.Companies.Delete(company.Id);
-                DataBase.SaveAsync();
+                DataBase.Save();
             }
         }
 
@@ -92,6 +94,11 @@ namespace OnlineStore.BLL.Services
             return mapper.Map<IEnumerable<Company>, List<CompanyDto>>(DataBase.Companies.GetAll());
         }
 
+        public void CanceleOrder(int orderId)
+        {
+            throw new NotImplementedException();
+        }
+
         public PhoneDto GetPhone(int? id)
         {
             if (id != null)
@@ -105,6 +112,12 @@ namespace OnlineStore.BLL.Services
                 return null;
             }
             return null;
+        }
+        public PhoneDto[] GetPhones(int[] ids)
+        {
+            var phones = DataBase.Phones.Find(t => ids.Contains(t.Id)).ToList();
+            var mapper = new MapperConfiguration(c => c.CreateMap<Phone, PhoneDto>()).CreateMapper();
+            return mapper.Map<IEnumerable<Phone>, PhoneDto[]>(phones);
         }
 
         public IEnumerable<PhoneDto> GetPhones()
@@ -127,9 +140,91 @@ namespace OnlineStore.BLL.Services
         }
 
 
-        public void MakeOrder(OrderDto orderDto)
+        public void MakeOrder(OrderDto orderDto, IEnumerable<LineItemDto> lineItemDtos)
         {
-            throw new NotImplementedException();
+            if (orderDto != null && lineItemDtos != null)
+            {
+                Order order = new Order()
+                {
+                    Address = orderDto.Address,
+                    Date = DateTime.Now,
+                    Email = orderDto.Email,
+                    PhoneNumber = orderDto.PhoneNumber,
+                    State = State.Оrdered,
+                };
+                DataBase.Orders.Create(order);
+                DataBase.Save();
+
+                foreach (var lineItemDto in lineItemDtos)
+                {
+                    LineItem lineItem = new LineItem()
+                    {
+                        Count = lineItemDto.Count,
+                        PhoneId = lineItemDto.PhoneId,
+                        Order = order
+                    };
+                    DataBase.LineItems.Create(lineItem);
+                    DataBase.Save();
+                }
+            }
+        }
+
+        public IEnumerable<OrderDto> GetOrders()
+        {
+            var mapper = new MapperConfiguration(c => c.CreateMap<Order, OrderDto>()).CreateMapper();
+            return mapper.Map<IEnumerable<Order>, List<OrderDto>>(DataBase.Orders.GetAll());
+        }
+
+        public OrderDto GetOrder(int id)
+        {
+
+            var order = DataBase.Orders.Get(id);
+            if (order != null)
+            {
+                var mapper = new MapperConfiguration(c => c.CreateMap<Order, OrderDto>()).CreateMapper();
+                return mapper.Map<Order, OrderDto>(order);
+            }
+            return null;
+        }
+
+        public void EditOrder(OrderDto orderDto)
+        {
+            var order = new Order()
+            {
+                Id = orderDto.Id,
+                Address = orderDto.Address,
+                Date = DateTime.Now,
+                Email = orderDto.Email,
+                PhoneNumber = orderDto.PhoneNumber,
+                State = orderDto.State == "Canceled" ? State.Canceled : orderDto.State == "Сonfirmed" ? State.Сonfirmed : State.Оrdered
+            };
+            DataBase.Orders.Update(order);
+            DataBase.Save();
+        }
+
+        public void DeleteOrder(int id)
+        {
+            var order = DataBase.Orders.Get(id);
+            if (order != null)
+            {
+                IEnumerable<LineItemDto> lineItemDtos = GetLineItemDtos(order.Id);
+                if (lineItemDtos != null)
+                {
+                    foreach (var lineItemDto in lineItemDtos)
+                    {
+                        DeleteLineItem(lineItemDto.Id);
+                    }
+                }
+                DataBase.Orders.Delete(order.Id);
+                DataBase.Save();
+            }
+        }
+
+        private void DeleteLineItem(int id)
+        {
+            DataBase.LineItems.Delete(id);
+            DataBase.Save();
+
         }
 
         public void CanceleOrder(OrderDto orderDto)
@@ -138,17 +233,20 @@ namespace OnlineStore.BLL.Services
         }
 
 
-
-
-        public LineItemDto GeLineItemDto(int? id)
+        public IEnumerable<LineItemDto> GetLineItemDtos(int orderId)
         {
-            throw new NotImplementedException();
+            var order = DataBase.Orders.Get(orderId);
+            if (order != null)
+            {
+                var mapper = new MapperConfiguration(c => c.CreateMap<LineItem, LineItemDto>()
+                    .ForMember(x => x.OrderDto, s => s.MapFrom(t => t.Order)).
+                    ForMember(x => x.PhoneDto, s => s.MapFrom(t => t.Phone))).CreateMapper();
+
+                return mapper.Map<IEnumerable<LineItem>, List<LineItemDto>>(DataBase.LineItems.GetAll().Where(t => t.OrderId == order.Id));
+            }
+            return null;
         }
 
-        public IEnumerable<LineItemDto> GetLineItemDtos()
-        {
-            throw new NotImplementedException();
-        }
 
         public void Dispose()
         {

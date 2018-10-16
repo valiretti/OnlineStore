@@ -19,6 +19,7 @@ namespace OnlineStore.DAL.Interfaces
         IRepository<Order> Orders { get; }
         IRepository<Company> Companies { get; }
         IRepository<LineItem> LineItems { get; }
+        void Save();
 
     }
 }

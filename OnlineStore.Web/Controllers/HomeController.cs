@@ -66,7 +66,7 @@ namespace OnlineStore.Web.Controllers
                     Price = decimal.Parse(phone.Price)
                 };
                 orderService.AddPhone(phoneDto);
-                return RedirectToAction("Index");
+                return RedirectToAction("GetPhones");
             }
             SelectList companies = new SelectList(orderService.GetCompanies(), "Id", "Name");
             ViewBag.Companies = companies;
@@ -111,7 +111,7 @@ namespace OnlineStore.Web.Controllers
         public ActionResult DeletePhone(PhoneViewModel phone)
         {
             orderService.DeletePhone(phone.Id);
-            return RedirectToAction("Index");
+            return RedirectToAction("GetPhones");
         }
 
 
@@ -125,15 +125,7 @@ namespace OnlineStore.Web.Controllers
                 var mapper = new MapperConfiguration(c => c.CreateMap<CompanyDto, CompanyViewModel>()).CreateMapper();
                 var company = mapper.Map<CompanyDto, CompanyViewModel>(companyDto);
 
-                IEnumerable<PhoneDto> phoneDtos = orderService.GetCertainBrandPhones(companyDto.Id);
-                if (phoneDtos != null)
-                {
-                    foreach (var phoneDto in phoneDtos)
-                    {
-                        orderService.DeletePhone(phoneDto.Id);
-                    }
-                }
-                return View(company);
+               return View(company);
             }
             return RedirectToAction("Index");
         }
@@ -141,6 +133,14 @@ namespace OnlineStore.Web.Controllers
         [HttpPost]
         public ActionResult DeleteCompany(CompanyViewModel company)
         {
+            IEnumerable<PhoneDto> phoneDtos = orderService.GetCertainBrandPhones(company.Id);
+            if (phoneDtos != null)
+            {
+                foreach (var phoneDto in phoneDtos)
+                {
+                    orderService.DeletePhone(phoneDto.Id);
+                }
+            }
             orderService.DeleteCompany(company.Id);
             return RedirectToAction("Index");
         }
@@ -148,23 +148,149 @@ namespace OnlineStore.Web.Controllers
         [AllowAnonymous]
         public JsonResult GetPhonesForCart(string json)
         {
-            int[] items = JsonConvert.DeserializeObject<int[]>(json);
-            PhoneViewModel[] phones = new PhoneViewModel[items.Length];
-            for (int i = 0; i < items.Length; i++)
+            if (json != null)
             {
-                PhoneDto phoneDto = orderService.GetPhone(items[i]);
-                var mapper = new MapperConfiguration(c => c.CreateMap<PhoneDto, PhoneViewModel>()).CreateMapper();
-                var phone = mapper.Map<PhoneDto, PhoneViewModel>(phoneDto);
-                phones[i] = phone;
-            }
+                int[] items = JsonConvert.DeserializeObject<int[]>(json);
+                if (items != null)
+                {
+                    PhoneDto[] phoneDtos = orderService.GetPhones(items);
+                    var mapper = new MapperConfiguration(c => c.CreateMap<PhoneDto, PhoneViewModel>()).CreateMapper();
+                    PhoneViewModel[] phones = mapper.Map<IEnumerable<PhoneDto>, PhoneViewModel[]>(phoneDtos);
+                    return Json(phones, JsonRequestBehavior.AllowGet);
+                }
 
-            return Json(phones, JsonRequestBehavior.AllowGet);
+            }
+            return Json(new int[0], JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]
         public ActionResult Cart()
         {
             return View();
+        }
+
+
+        [HttpGet]
+        public ActionResult Order()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult Order(OrderViewModelForCart order)
+        {
+            if (ModelState.IsValid)
+            {
+                if (order.Items != null)
+                {
+                    List<LineItemViewModel> items = JsonConvert.DeserializeObject<List<LineItemViewModel>>(order.Items);
+
+                    var orderDto = new OrderDto()
+                    {
+                        Address = order.Address,
+                        Email = order.Email,
+                        PhoneNumber = order.PhoneNumber,
+                    };
+
+                    List<LineItemDto> lineItemDtos = new List<LineItemDto>();
+                    foreach (var item in items)
+                    {
+                        var lineItemDto = new LineItemDto()
+                        {
+                            Count = item.Count,
+                            PhoneId = item.PhoneId,
+                        };
+                        lineItemDtos.Add(lineItemDto);
+                    }
+
+                    orderService.MakeOrder(orderDto, lineItemDtos);
+                }
+                return View("AcceptOrder");
+            }
+            return View();
+        }
+
+        //[Authorize(Roles = "Manager")]
+        public ActionResult GetOrders()
+        {
+            IEnumerable<OrderDto> orderDtos = orderService.GetOrders();
+            var mapper = new MapperConfiguration(c => c.CreateMap<OrderDto, OrderViewModel>()).CreateMapper();
+            var orders = mapper.Map<IEnumerable<OrderDto>, List<OrderViewModel>>(orderDtos);
+            return View(orders);
+        }
+
+        public ActionResult GetLineItems(int? id)
+        {
+            if (id != null)
+            {
+                IEnumerable<LineItemDto> lineItemDtosDtos = orderService.GetLineItemDtos(id.Value);
+                var mapper = new MapperConfiguration(c => c.CreateMap<LineItemDto, LineItemViewModel>()
+                    .ForMember(x => x.PhoneViewModel, s => s.MapFrom(t => t.PhoneDto))
+                    .ForMember(t => t.OrderViewModel, s => s.MapFrom(x => x.OrderDto)).IgnoreAllPropertiesWithAnInaccessibleSetter()).CreateMapper();
+                var lineItems = mapper.Map<IEnumerable<LineItemDto>, List<LineItemViewModel>>(lineItemDtosDtos);
+                return View(lineItems);
+            }
+            return RedirectToAction("GetOrders");
+        }
+
+        [HttpGet]
+        public ActionResult EditOrder(int? id)
+        {
+            if (id != null)
+            {
+                OrderDto orderDto = orderService.GetOrder(id.Value);
+                if (orderDto != null)
+                {
+                    var mapper = new MapperConfiguration(c => c.CreateMap<OrderDto, OrderViewModel>()).CreateMapper();
+                    var order = mapper.Map<OrderDto, OrderViewModel>(orderDto);
+
+                    SelectList states = new SelectList(new []{"Canceled", "Сonfirmed", "Odered" });
+                    ViewBag.States = states;
+
+                    return View(order);
+                }
+            }
+            return RedirectToAction("GetOrders");
+        }
+
+        [HttpPost]
+        public ActionResult EditOrder(OrderViewModel orderViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var mapper = new MapperConfiguration(c => c.CreateMap<OrderViewModel, OrderDto>()).CreateMapper();
+                var orderDto = mapper.Map<OrderViewModel, OrderDto>(orderViewModel);
+                orderService.EditOrder(orderDto);
+                return RedirectToAction("GetOrders");
+            }
+
+            SelectList states = new SelectList(new[] { "Canceled", "Сonfirmed", "Odered" });
+            ViewBag.States = states;
+            return View(orderViewModel);
+        }
+
+        [HttpGet]
+        public ActionResult DeleteOrder(int? id)
+        {
+            if (id!=null)
+            {
+                OrderDto orderDto = orderService.GetOrder(id.Value);
+                if (orderDto != null)
+                {
+                    var mapper = new MapperConfiguration(c => c.CreateMap<OrderDto, OrderViewModel>()).CreateMapper();
+                    var order = mapper.Map<OrderDto, OrderViewModel>(orderDto);
+
+                    return View(order);
+                }
+            }
+            return RedirectToAction("GetOrders");
+        }
+
+        [HttpPost]
+        public ActionResult DeleteOrder(OrderViewModel orderViewModel)
+        {
+            orderService.DeleteOrder(orderViewModel.Id);
+            return RedirectToAction("GetOrders");
         }
     }
 }
