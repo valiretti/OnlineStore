@@ -9,13 +9,13 @@ namespace OnlineStore.BLL.Interfaces
 {
     public interface IOrderService
     {
-        void MakeOrder(OrderDto orderDto, IEnumerable<LineItemDto> lineItemDtos);
+        void MakeOrder(OrderDto orderDto, IEnumerable<LineItemDto> lineItemDtos, UserDto userDto);
         IEnumerable<OrderDto> GetOrders();
+        IEnumerable<OrderDto> GetOrdersForUser(string userId);
         OrderDto GetOrder(int id);
         void DeleteOrder(int id);
-        void CanceleOrder(int orderId);
         void EditOrder(OrderDto orderDto);
-      
+
         PhoneDto GetPhone(int? id);
         PhoneDto[] GetPhones(int[] ids);
         IEnumerable<PhoneDto> GetPhones();
@@ -30,9 +30,11 @@ namespace OnlineStore.BLL.Interfaces
         CompanyDto GetCompany(int? id);
         IEnumerable<CompanyDto> GetCompanies();
 
-       IEnumerable<LineItemDto> GetLineItemDtos(int orderId);
-   
-   
+        IEnumerable<LineItemDto> GetLineItemDtos(int orderId);
+        LineItemDto GetLineItemDto(int id);
+        void DeleteLineItem(int id);
+
+        UserDto GetUserData(string id);
 
 
         void Dispose();

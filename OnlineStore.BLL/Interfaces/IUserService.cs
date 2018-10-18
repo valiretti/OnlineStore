@@ -13,5 +13,7 @@ namespace OnlineStore.BLL.Interfaces
         Task<string> Create(UserDto userDto);
         Task<ClaimsIdentity> Authenticate(UserDto userDto);
         Task SetInitialData(UserDto adminDto, List<string> roles);
+
+
     }
 }

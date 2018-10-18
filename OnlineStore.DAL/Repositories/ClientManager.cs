@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Data.Entity;
 using OnlineStore.DAL.EF;
 using OnlineStore.DAL.Entities;
 using OnlineStore.DAL.Interfaces;
@@ -21,6 +17,16 @@ namespace OnlineStore.DAL.Repositories
         {
             Database.ClientProfiles.Add(item);
             Database.SaveChanges();
+        }
+
+        public ClientProfile GetClientProfile(string id)
+        {
+          return Database.ClientProfiles.Find(id);
+        }
+
+        public void Update(ClientProfile item)
+        {
+            Database.Entry(item).State = EntityState.Modified;
         }
 
         public void Dispose()

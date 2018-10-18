@@ -75,12 +75,13 @@ namespace OnlineStore.Web.Controllers
                     Password = model.Password,
                     Address = model.Address,
                     Name = model.Name,
+                    PhoneNumber = model.PhoneNumber,
                     Role = "user"
                 };
                 string result = await UserService.Create(userDto);
                 if (result=="OK")
-                    return View();
-                else
+                    return View("SuccessfullRegister");
+               else
                     ModelState.AddModelError("", result);
             }
             return View(model);

@@ -4,8 +4,6 @@
     ViewBag.Title = "GetLineItems";
 }
 
-<h2>GetLineItems</h2>
-
 <table class="table">
     <tr>
         <th>
@@ -18,12 +16,7 @@
         <th>
             @Html.DisplayNameFor(model => model.PhoneViewModel.Price)
         </th>
-        <th>
-            @Html.DisplayNameFor(model => model.OrderViewModel.PhoneNumber)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.OrderViewModel.Address)
-        </th>
+        
         <th></th>
     </tr>
 
@@ -41,12 +34,9 @@
                 @Html.DisplayFor(modelItem => item.PhoneViewModel.Price)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.OrderViewModel.PhoneNumber)
+               @Html.ActionLink("Delete", "DeleteLineItem", new { id = item.Id })
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.OrderViewModel.Address)
-            </td>
-            
+           
         </tr>
     }
 

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using AutoMapper;
 using OnlineStore.BLL.DTO;
 using OnlineStore.BLL.Interfaces;
@@ -68,8 +66,24 @@ namespace OnlineStore.BLL.Services
             var company = DataBase.Companies.Get(id);
             if (company != null)
             {
-                DataBase.Companies.Delete(company.Id);
-                DataBase.Save();
+                var phoneDtos = GetCertainBrandPhones(company.Id);
+                if (phoneDtos != null)
+                {
+                    DeletePhones(phoneDtos);
+                    DataBase.Companies.Delete(company.Id);
+                    DataBase.Save();
+                }
+            }
+        }
+
+        private void DeletePhones(IEnumerable<PhoneDto> phoneDtos)
+        {
+            foreach (var phoneDto in phoneDtos)
+            {
+                if (phoneDto != null)
+                {
+                    DataBase.LineItems.Delete(phoneDto.Id);
+                }
             }
         }
 
@@ -92,11 +106,6 @@ namespace OnlineStore.BLL.Services
         {
             var mapper = new MapperConfiguration(c => c.CreateMap<Company, CompanyDto>()).CreateMapper();
             return mapper.Map<IEnumerable<Company>, List<CompanyDto>>(DataBase.Companies.GetAll());
-        }
-
-        public void CanceleOrder(int orderId)
-        {
-            throw new NotImplementedException();
         }
 
         public PhoneDto GetPhone(int? id)
@@ -139,21 +148,39 @@ namespace OnlineStore.BLL.Services
             return null;
         }
 
+        public UserDto GetUserData(string id)
+        {
+            var user = DataBase.ClientManager.GetClientProfile(id);
+            if (user != null)
+            {
+                var userDto = new UserDto()
+                {
+                    Id = user.Id,
+                    Name = user.Name,
+                    Email = user.Email,
+                    PhoneNumber = user.PhoneNumber,
+                };
+                return userDto;
+            }
 
-        public void MakeOrder(OrderDto orderDto, IEnumerable<LineItemDto> lineItemDtos)
+            return null;
+        }
+
+        public void MakeOrder(OrderDto orderDto, IEnumerable<LineItemDto> lineItemDtos, UserDto userDto)
         {
             if (orderDto != null && lineItemDtos != null)
             {
-                Order order = new Order()
+                Order order = new Order
                 {
                     Address = orderDto.Address,
                     Date = DateTime.Now,
                     Email = orderDto.Email,
                     PhoneNumber = orderDto.PhoneNumber,
                     State = State.Оrdered,
+                    Name = orderDto.Name,
+                    ClientProfileId = userDto.Id
                 };
                 DataBase.Orders.Create(order);
-                DataBase.Save();
 
                 foreach (var lineItemDto in lineItemDtos)
                 {
@@ -164,8 +191,9 @@ namespace OnlineStore.BLL.Services
                         Order = order
                     };
                     DataBase.LineItems.Create(lineItem);
-                    DataBase.Save();
                 }
+
+                DataBase.Save();
             }
         }
 
@@ -173,6 +201,12 @@ namespace OnlineStore.BLL.Services
         {
             var mapper = new MapperConfiguration(c => c.CreateMap<Order, OrderDto>()).CreateMapper();
             return mapper.Map<IEnumerable<Order>, List<OrderDto>>(DataBase.Orders.GetAll());
+        }
+
+        public IEnumerable<OrderDto> GetOrdersForUser(string userId)
+        {
+            var mapper = new MapperConfiguration(c => c.CreateMap<Order, OrderDto>()).CreateMapper();
+            return mapper.Map<IEnumerable<Order>, List<OrderDto>>(DataBase.Orders.GetAll().Where(t => t.ClientProfileId == userId));
         }
 
         public OrderDto GetOrder(int id)
@@ -210,26 +244,22 @@ namespace OnlineStore.BLL.Services
                 IEnumerable<LineItemDto> lineItemDtos = GetLineItemDtos(order.Id);
                 if (lineItemDtos != null)
                 {
-                    foreach (var lineItemDto in lineItemDtos)
-                    {
-                        DeleteLineItem(lineItemDto.Id);
-                    }
+                    DeleteLineItems(lineItemDtos);
+                    DataBase.Orders.Delete(order.Id);
+                    DataBase.Save();
                 }
-                DataBase.Orders.Delete(order.Id);
-                DataBase.Save();
             }
         }
 
-        private void DeleteLineItem(int id)
+        private void DeleteLineItems(IEnumerable<LineItemDto> lineItemDtos)
         {
-            DataBase.LineItems.Delete(id);
-            DataBase.Save();
-
-        }
-
-        public void CanceleOrder(OrderDto orderDto)
-        {
-            throw new NotImplementedException();
+            foreach (var lineItemDto in lineItemDtos)
+            {
+                if (lineItemDto != null)
+                {
+                    DataBase.LineItems.Delete(lineItemDto.Id);
+                }
+            }
         }
 
 
@@ -247,6 +277,29 @@ namespace OnlineStore.BLL.Services
             return null;
         }
 
+        public LineItemDto GetLineItemDto(int id)
+        {
+            var lineItem = DataBase.LineItems.Get(id);
+            if (lineItem != null)
+            {
+                var mapper = new MapperConfiguration(c => c.CreateMap<LineItem, LineItemDto>()
+                    .ForMember(x => x.OrderDto, s => s.MapFrom(t => t.Order)).
+                    ForMember(x => x.PhoneDto, s => s.MapFrom(t => t.Phone))).CreateMapper();
+
+                return mapper.Map<LineItem, LineItemDto>(DataBase.LineItems.Get(id));
+            }
+            return null;
+        }
+
+        public void DeleteLineItem(int id)
+        {
+            var lineItem = DataBase.LineItems.Get(id);
+            if (lineItem != null)
+            {
+                DataBase.LineItems.Delete(lineItem.Id);
+                DataBase.Save();
+            }
+        }
 
         public void Dispose()
         {

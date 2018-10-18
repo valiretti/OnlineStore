@@ -12,6 +12,9 @@ namespace OnlineStore.Web.Models
 
         public string State { get; set; }
 
+        [Display(Name = "Имя")]
+        public string Name { get; set; }
+
         [Display(Name = "Email")]
         public string Email { get; set; }
 
