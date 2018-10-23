@@ -25,5 +25,7 @@ namespace OnlineStore.Web.Models
         [Required(ErrorMessage = "Поле должно быть заполнено")]
         [Display(Name = "Цена")]
         public string Price { get; set; }
+
+        public string ImagePath { get; set; }
     }
 }

@@ -25,6 +25,7 @@ namespace OnlineStore.Web.Models
         [Display(Name = "Телефон")]
         public string PhoneNumber { get; set; }
 
+        public string ClientProfileId { get; set; }
 
     }
 }

@@ -76,7 +76,7 @@ namespace OnlineStore.Web.Controllers
                     Address = model.Address,
                     Name = model.Name,
                     PhoneNumber = model.PhoneNumber,
-                    Role = "user"
+                    Role = "User"
                 };
                 string result = await UserService.Create(userDto);
                 if (result=="OK")
@@ -90,14 +90,44 @@ namespace OnlineStore.Web.Controllers
         {
             await UserService.SetInitialData(new UserDto
             {
-                Email = "somemail@mail.ru",
-                UserName = "somemail@mail.ru",
-                Password = "ad46D_ewr3",
-                Name = "Семен Семенович Горбунков",
+                Email = "admin@gmail.com",
+                UserName = "admin@gmail.com",
+                Password = "administrator",
+                Name = "Admin",
                 Address = "ул. Спортивная, д.30, кв.75",
-                Role = "admin",
+                Role = "Admin",
                 PhoneNumber = "1234567"
-            }, new List<string> { "user", "admin" });
+            }, new List<string> { "User", "Admin", "Manager" });
+        }
+
+        public ActionResult AddManager()
+        {
+            return View("Register");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> AddManager(RegisterModel model)
+        {
+            await SetInitialDataAsync();
+            if (ModelState.IsValid)
+            {
+                UserDto userDto = new UserDto
+                {
+                    Email = model.Email,
+                    Password = model.Password,
+                    Address = model.Address,
+                    Name = model.Name,
+                    PhoneNumber = model.PhoneNumber,
+                    Role = "Manager"
+                };
+                string result = await UserService.Create(userDto);
+                if (result == "OK")
+                    return View("SuccessfullRegister");
+                else
+                    ModelState.AddModelError("", result);
+            }
+            return View("Register",model);
         }
     }
 }

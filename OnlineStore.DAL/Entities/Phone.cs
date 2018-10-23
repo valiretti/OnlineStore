@@ -14,6 +14,7 @@ namespace OnlineStore.DAL.Entities
         public int CompanyId { get; set; }
         public Company Company { get; set; }
 
+        public string ImagePath { get; set; }
         public string PhoneDescription { get; set; }
         public decimal Price { get; set; }
 

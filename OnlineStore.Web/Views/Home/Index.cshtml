@@ -21,14 +21,24 @@
 
 </table>
 
+@if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+{
+    @Html.ActionLink("Add Phones", "AddPhone")
+    <p></p>
+    @Html.ActionLink("Add Companies", "AddCompany")
+    <p></p>
+    @Html.ActionLink("Get Orders", "GetOrders")
+    <p></p>
+}
+@if (User.IsInRole("User"))
+{
+    @Html.ActionLink("Orders for user", "GetOrdersForUser")
+}
 
-@Html.ActionLink("Add Phones", "AddPhone")
-<p></p>
-@Html.ActionLink("Add Companies", "AddCompany")
-<p></p>
-@Html.ActionLink("Get Orders", "GetOrders")
-<p></p>
-@Html.ActionLink("Get Orders for user", "GetOrdersForUser")
+@if (User.IsInRole("Admin"))
+{
+    @Html.ActionLink("Add Managers","AddManager", "Account")
+}
 
 
 

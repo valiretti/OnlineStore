@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using OnlineStore.BLL.DTO;
 
 namespace OnlineStore.BLL.Interfaces
 {
     public interface IOrderService
     {
-        void MakeOrder(OrderDto orderDto, IEnumerable<LineItemDto> lineItemDtos, UserDto userDto);
+        void MakeOrder(OrderDto orderDto, IEnumerable<LineItemDto> lineItemDtos, string userId);
         IEnumerable<OrderDto> GetOrders();
         IEnumerable<OrderDto> GetOrdersForUser(string userId);
         OrderDto GetOrder(int id);

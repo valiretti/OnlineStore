@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Web;
 using System.Web.Mvc;
 using AutoMapper;
 using Microsoft.AspNet.Identity;
@@ -43,7 +46,6 @@ namespace OnlineStore.Web.Controllers
         }
 
         [HttpGet]
-        //[Authorize(Roles = "Manager")]
         public ActionResult AddPhone()
         {
             SelectList companies = new SelectList(orderService.GetCompanies(), "Id", "Name");
@@ -52,16 +54,24 @@ namespace OnlineStore.Web.Controllers
         }
 
         [HttpPost]
-        public ActionResult AddPhone(PhoneViewModel phone)
+        public ActionResult AddPhone(PhoneViewModel phone, HttpPostedFileBase image)
         {
             if (ModelState.IsValid)
             {
+                string imagePath=null;
+                if (image!=null)
+                {
+                    imagePath = $"{Guid.NewGuid():N}{Path.GetExtension(image.FileName)}";
+                    image.SaveAs(Server.MapPath("~/Files/Images/" + imagePath));
+                }
+
                 var phoneDto = new PhoneDto
                 {
                     Name = phone.Name,
                     PhoneDescription = phone.PhoneDescription,
                     CompanyId = int.Parse(phone.CompanyId),
-                    Price = decimal.Parse(phone.Price)
+                    Price = decimal.Parse(phone.Price),
+                    ImagePath = imagePath 
                 };
                 orderService.AddPhone(phoneDto);
                 return RedirectToAction("GetPhones");
@@ -73,7 +83,6 @@ namespace OnlineStore.Web.Controllers
         }
 
         [HttpGet]
-        //[Authorize(Roles = "Manager")]
         public ActionResult AddCompany()
         {
             return View();
@@ -98,7 +107,6 @@ namespace OnlineStore.Web.Controllers
 
 
         [HttpGet]
-        //[Authorize(Roles = "Manager")]
         public ActionResult DeletePhone(int id)
         {
             PhoneDto phoneDto = orderService.GetPhone(id);
@@ -115,7 +123,6 @@ namespace OnlineStore.Web.Controllers
         }
 
 
-        //[Authorize(Roles = "Manager")]
         [HttpGet]
         public ActionResult DeleteCompany(int id)
         {
@@ -168,6 +175,22 @@ namespace OnlineStore.Web.Controllers
         [HttpGet]
         public ActionResult Order()
         {
+            if (User.Identity.IsAuthenticated)
+            {
+                var userId = User.Identity.GetUserId();
+                UserDto userDto = orderService.GetUserData(userId);
+                if (userDto != null)
+                {
+                    var orderViewModel = new OrderViewModelForCart()
+                    {
+                        Name = userDto.Name,
+                        Address = userDto.Address,
+                        Email = userDto.Email,
+                        PhoneNumber = userDto.PhoneNumber
+                    };
+                    return View(orderViewModel);
+                }
+            }
             return View();
         }
 
@@ -181,6 +204,7 @@ namespace OnlineStore.Web.Controllers
                     List<LineItemViewModel> items = JsonConvert.DeserializeObject<List<LineItemViewModel>>(order.Items);
 
                     List<LineItemDto> lineItemDtos = new List<LineItemDto>();
+
                     foreach (var item in items)
                     {
                         var lineItemDto = new LineItemDto()
@@ -191,35 +215,17 @@ namespace OnlineStore.Web.Controllers
                         lineItemDtos.Add(lineItemDto);
                     }
 
-                    if (User.Identity.IsAuthenticated)
-
+                    var orderDto = new OrderDto
                     {
-                        var userId = User.Identity.GetUserId();
-                        UserDto userDto = orderService.GetUserData(userId);
-                        if (userDto != null)
-                        {
-                            var orderDto = new OrderDto
-                            {
-                                Name = userDto.Name,
-                                Address = order.Address,
-                                Email = userDto.Email,
-                                PhoneNumber = userDto.PhoneNumber,
-                            };
-                            orderService.MakeOrder(orderDto, lineItemDtos, userDto);
-                        }
-                    }
+                        Name = order.Name,
+                        Address = order.Address,
+                        Email = order.Email,
+                        PhoneNumber = order.PhoneNumber,
+                    };
 
-                    else
-                    {
-                        var orderDto = new OrderDto
-                        {
-                            Name = order.Name,
-                            Address = order.Address,
-                            Email = order.Email,
-                            PhoneNumber = order.PhoneNumber,
-                        };
-                        orderService.MakeOrder(orderDto, lineItemDtos, null);
-                    }
+                    string userId = User.Identity.IsAuthenticated ? User.Identity.GetUserId() : null;
+
+                    orderService.MakeOrder(orderDto, lineItemDtos, userId);
                 }
 
                 return View("AcceptOrder");
@@ -228,7 +234,6 @@ namespace OnlineStore.Web.Controllers
             return View();
         }
 
-        //[Authorize(Roles = "Manager")]
         public ActionResult GetOrders()
         {
             IEnumerable<OrderDto> orderDtos = orderService.GetOrders();
@@ -237,14 +242,13 @@ namespace OnlineStore.Web.Controllers
             return View(orders);
         }
 
-        //[Authorize(Roles = "User")]
         public ActionResult GetOrdersForUser()
         {
             var userId = User.Identity.GetUserId();
             IEnumerable<OrderDto> orderDtos = orderService.GetOrdersForUser(userId);
             var mapper = new MapperConfiguration(c => c.CreateMap<OrderDto, OrderViewModel>()).CreateMapper();
             var orders = mapper.Map<IEnumerable<OrderDto>, List<OrderViewModel>>(orderDtos);
-            return View("GetOrders",orders);
+            return View("GetOrders", orders);
         }
 
 
@@ -275,13 +279,12 @@ namespace OnlineStore.Web.Controllers
                     var mapper = new MapperConfiguration(c => c.CreateMap<OrderDto, OrderViewModel>()).CreateMapper();
                     var order = mapper.Map<OrderDto, OrderViewModel>(orderDto);
 
-                    SelectList states = new SelectList(new[] { "Canceled", "Сonfirmed", "Odered" });
+                    SelectList states = new SelectList(new[] { "Сonfirmed", "Odered", "Canceled" });
                     ViewBag.States = states;
 
                     return View(order);
                 }
             }
-
             return RedirectToAction("GetOrders");
         }
 
@@ -292,13 +295,61 @@ namespace OnlineStore.Web.Controllers
             {
                 var mapper = new MapperConfiguration(c => c.CreateMap<OrderViewModel, OrderDto>()).CreateMapper();
                 var orderDto = mapper.Map<OrderViewModel, OrderDto>(orderViewModel);
+
                 orderService.EditOrder(orderDto);
                 return RedirectToAction("GetOrders");
             }
 
-            SelectList states = new SelectList(new[] { "Canceled", "Сonfirmed", "Odered" });
+            SelectList states = new SelectList(new[] { "Сonfirmed", "Odered", "Canceled" });
             ViewBag.States = states;
             return View(orderViewModel);
+        }
+
+        [HttpGet]
+        public ActionResult EditOrderForUser(int? id)
+        {
+            if (id != null)
+            {
+                OrderDto orderDto = orderService.GetOrder(id.Value);
+
+                if (orderDto != null)
+                {
+                    if (orderDto.State == "Сonfirmed")
+                    {
+                        return View("OrderConfirmed");
+                    }
+                    if (orderDto.State == "Canceled")
+                    {
+                        return View("OrderCanceled");
+                    }
+
+                    var mapper = new MapperConfiguration(c => c.CreateMap<OrderDto, OrderViewModel>()).CreateMapper();
+                    var order = mapper.Map<OrderDto, OrderViewModel>(orderDto);
+
+                    SelectList states = new SelectList(new[] { "Odered", "Canceled" });
+                    ViewBag.States = states;
+
+                    return View("EditOrder", order);
+                }
+            }
+            return RedirectToAction("GetOrdersForUser");
+        }
+
+        [HttpPost]
+        public ActionResult EditOrderForUser(OrderViewModel orderViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var mapper = new MapperConfiguration(c => c.CreateMap<OrderViewModel, OrderDto>()).CreateMapper();
+                var orderDto = mapper.Map<OrderViewModel, OrderDto>(orderViewModel);
+
+                orderService.EditOrder(orderDto);
+                return RedirectToAction("GetOrdersForUser");
+            }
+
+            SelectList states = new SelectList(new[] { "Odered", "Canceled" });
+            ViewBag.States = states;
+            return View("EditOrder", orderViewModel);
         }
 
         [HttpGet]
@@ -324,6 +375,35 @@ namespace OnlineStore.Web.Controllers
         {
             orderService.DeleteOrder(orderViewModel.Id);
             return RedirectToAction("GetOrders");
+        }
+
+        [HttpGet]
+        public ActionResult DeleteOrderForUser(int? id)
+        {
+            if (id != null)
+            {
+                OrderDto orderDto = orderService.GetOrder(id.Value);
+                if (orderDto != null)
+                {
+                    if (orderDto.State == "Сonfirmed")
+                    {
+                        return View("OrderConfirmed");
+                    }
+
+                    var mapper = new MapperConfiguration(c => c.CreateMap<OrderDto, OrderViewModel>()).CreateMapper();
+                    var order = mapper.Map<OrderDto, OrderViewModel>(orderDto);
+
+                    return View("DeleteOrder", order);
+                }
+            }
+            return RedirectToAction("GetOrdersForUser");
+        }
+
+        [HttpPost]
+        public ActionResult DeleteOrderForUser(OrderViewModel orderViewModel)
+        {
+            orderService.DeleteOrder(orderViewModel.Id);
+            return RedirectToAction("GetOrdersForUser");
         }
 
         [HttpGet]

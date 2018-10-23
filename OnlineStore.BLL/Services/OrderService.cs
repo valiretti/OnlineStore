@@ -29,7 +29,8 @@ namespace OnlineStore.BLL.Services
                     Name = phoneDto.Name,
                     CompanyId = company.Id,
                     PhoneDescription = phoneDto.PhoneDescription,
-                    Price = phoneDto.Price
+                    Price = phoneDto.Price,
+                    ImagePath = phoneDto.ImagePath
 
                 };
                 DataBase.Phones.Create(phone);
@@ -159,6 +160,7 @@ namespace OnlineStore.BLL.Services
                     Name = user.Name,
                     Email = user.Email,
                     PhoneNumber = user.PhoneNumber,
+                    Address = user.Address,
                 };
                 return userDto;
             }
@@ -166,7 +168,7 @@ namespace OnlineStore.BLL.Services
             return null;
         }
 
-        public void MakeOrder(OrderDto orderDto, IEnumerable<LineItemDto> lineItemDtos, UserDto userDto)
+        public void MakeOrder(OrderDto orderDto, IEnumerable<LineItemDto> lineItemDtos, string userId)
         {
             if (orderDto != null && lineItemDtos != null)
             {
@@ -178,7 +180,7 @@ namespace OnlineStore.BLL.Services
                     PhoneNumber = orderDto.PhoneNumber,
                     State = State.Оrdered,
                     Name = orderDto.Name,
-                    ClientProfileId = userDto.Id
+                    ClientProfileId = userId
                 };
                 DataBase.Orders.Create(order);
 
@@ -226,10 +228,12 @@ namespace OnlineStore.BLL.Services
             var order = new Order()
             {
                 Id = orderDto.Id,
+                Name = orderDto.Name,
                 Address = orderDto.Address,
                 Date = DateTime.Now,
                 Email = orderDto.Email,
                 PhoneNumber = orderDto.PhoneNumber,
+                ClientProfileId = orderDto.ClientProfileId,
                 State = orderDto.State == "Canceled" ? State.Canceled : orderDto.State == "Сonfirmed" ? State.Сonfirmed : State.Оrdered
             };
             DataBase.Orders.Update(order);

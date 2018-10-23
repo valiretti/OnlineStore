@@ -13,11 +13,11 @@ namespace OnlineStore.Web.Models
 
         public string Items { get; set; }
 
-        //[Required (ErrorMessage = "Поле должно быть заполнено")]
+        [Required(ErrorMessage = "Поле должно быть заполнено")]
         [Display(Name = "Имя")]
         public string Name { get; set; }
 
-        //[Required(ErrorMessage = "Поле должно быть заполнено")]
+        [Required(ErrorMessage = "Поле должно быть заполнено")]
         [Display(Name = "Email")]
         public string Email { get; set; }
 
@@ -25,7 +25,7 @@ namespace OnlineStore.Web.Models
         [Display(Name = "Адрес доставки")]
         public string Address { get; set; }
 
-        //[Required(ErrorMessage = "Поле должно быть заполнено")]
+        [Required(ErrorMessage = "Поле должно быть заполнено")]
         [Display(Name = "Телефон")]
         public string PhoneNumber { get; set; }
     }

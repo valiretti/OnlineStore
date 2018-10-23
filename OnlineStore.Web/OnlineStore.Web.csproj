@@ -270,9 +270,12 @@
     <Content Include="Views\Home\DeleteOrder.cshtml" />
     <Content Include="Views\Account\SuccessfullRegister.cshtml" />
     <Content Include="Views\Home\DeleteLineItem.cshtml" />
+    <Content Include="Views\Home\OrderConfirmed.cshtml" />
+    <Content Include="Views\Home\OrderCanceled.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Files\Images\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
