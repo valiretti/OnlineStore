@@ -11,11 +11,14 @@
             <td>
                 @Html.ActionLink(item.Name, "GetCertainBrendPhones", new { id = item.Id })
             </td>
-            <td>
-                @Html.ActionLink("Delete", "DeleteCompany", new { id = item.Id })
-            </td>
 
+            @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+            {
 
+                <td>
+                    @Html.ActionLink("Delete", "DeleteCompany", new { id = item.Id })
+                </td>
+            }
         </tr>
     }
 
@@ -37,7 +40,7 @@
 
 @if (User.IsInRole("Admin"))
 {
-    @Html.ActionLink("Add Managers","AddManager", "Account")
+    @Html.ActionLink("Add Managers", "AddManager", "Account")
 }
 
 

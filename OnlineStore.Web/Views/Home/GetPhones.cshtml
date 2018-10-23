@@ -36,9 +36,15 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Price)
             </td>
-            <td>
-                @Html.ActionLink("Delete", "DeletePhone", new { id = item.Id })
-            </td>
+
+            @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+            {
+
+                <td>
+                    @Html.ActionLink("Delete", "DeletePhone", new { id = item.Id })
+                </td>
+            }
+
             <td>
                 <a class="add_item" data-id="@item.Id" href="#">Добавить в корзину</a>
             </td>
