@@ -48,6 +48,10 @@ function displayItemsInCart(data) {
                 "'onclick='deleteItem(this);' >Удалить</a></td></tr> ";
         }
         strResult += "</table>";
+        strResult += "<p><p/>";
+        strResult += "<p class='col-md-offset-9 col-md-10' > Общая стоимость: &nbsp; <span style='font-size: 20px'><strong>" +
+            totalCost(cartContent) + " руб.</strong></span></p>";
+
         document.getElementById('cart_content').innerHTML = strResult;
         var table = document.querySelector("#cart_content table");
         table.className = "table";
@@ -82,6 +86,13 @@ function orderProduct() {
     document.location.href = "/home/Order";
 }
 
+function totalCost(cartContent) {
+    let cost = 0.0;
+    for (let item of cartContent) {
+        cost += parseFloat(item.Price)*countItems(item.Id);
+    }
+    return cost;
+}
 
 function countItems(id) {
     let count = 0;

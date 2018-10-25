@@ -4,6 +4,13 @@
     ViewBag.Title = "GetLineItems";
 }
 
+@{
+    double totalCost = 0.0;
+    foreach (var model in Model)
+    {
+        totalCost += model.Count * Double.Parse(model.PhoneViewModel.Price);
+    }
+}
 <table class="table">
     <tr>
         <th>
@@ -16,14 +23,13 @@
         <th>
             @Html.DisplayNameFor(model => model.PhoneViewModel.Price)
         </th>
-        
+
         <th></th>
     </tr>
 
     @foreach (var item in Model)
     {
         <tr>
-
             <td>
                 @Html.DisplayFor(modelItem => item.PhoneViewModel.Name)
             </td>
@@ -34,10 +40,19 @@
                 @Html.DisplayFor(modelItem => item.PhoneViewModel.Price)
             </td>
             <td>
-               @Html.ActionLink("Delete", "DeleteLineItem", new { id = item.Id })
+                @Html.ActionLink("Delete", "DeleteLineItem", new { id = item.Id })
             </td>
-           
         </tr>
+       
     }
 
+
 </table>
+
+<div class="col-md-offset-9 col-md-10">
+    <p> Общая стоимость: &nbsp; <span style='font-size: 20px'><strong> @totalCost  руб.</strong></span></p>
+</div>
+
+<div>
+    @Html.ActionLink("Back to List", "GetOrders")
+</div>
