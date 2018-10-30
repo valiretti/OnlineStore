@@ -10,11 +10,11 @@ namespace OnlineStore.DAL.Entities
     {
         public Company()
         {
-            Phones = new List<Phone>();
+            Products = new List<Product>();
         }
 
         public int Id { get; set; }
         public string Name { get; set; }
-        public ICollection<Phone> Phones { get; set; }
+        public ICollection<Product> Products { get; set; }
     }
 }

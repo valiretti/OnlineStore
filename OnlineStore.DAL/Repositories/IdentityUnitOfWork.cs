@@ -12,9 +12,10 @@ namespace OnlineStore.DAL.Repositories
     {
         private ApplicationContext db;
         private OrderRepository orderRepository;
-        private PhoneRepository phoneRepository;
+        private ProductRepository productRepository;
         private CompanyRepository companyRepository;
         private LineItemRepository lineItemRepository;
+        private CategoryRepository categoryRepository;
 
 
         public IdentityUnitOfWork(string connectionString)
@@ -31,13 +32,13 @@ namespace OnlineStore.DAL.Repositories
 
         public ApplicationRoleManager RoleManager { get; }
 
-        public IRepository<Phone> Phones
+        public IRepository<Product> Products
         {
             get
             {
-                if (phoneRepository == null)
-                    phoneRepository = new PhoneRepository(db);
-                return phoneRepository;
+                if (productRepository == null)
+                    productRepository = new ProductRepository(db);
+                return productRepository;
             }
         }
 
@@ -59,6 +60,16 @@ namespace OnlineStore.DAL.Repositories
                 if (companyRepository == null)
                     companyRepository = new CompanyRepository(db);
                 return companyRepository;
+            }
+        }
+
+        public IRepository<Category> Categories
+        {
+            get
+            {
+                if (categoryRepository == null)
+                    categoryRepository = new CategoryRepository(db);
+                return categoryRepository;
             }
         }
 

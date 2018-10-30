@@ -14,15 +14,15 @@ namespace OnlineStore.DAL.Repositories
         {
         }
 
-        public override IEnumerable<LineItem> GetAll()
+        public override IQueryable<LineItem> GetAll()
         {
-            return db.LineItems.Include(t => t.Phone).Include(t => t.Order);
+            return db.LineItems.Include(t => t.Product).Include(t => t.Order);
         }
 
 
         public override IQueryable<LineItem> Find(Expression<Func<LineItem, bool>> predicate)
         {
-            return db.LineItems.Include(t => t.Phone).Include(t=>t.Order).Where(predicate);
+            return db.LineItems.Include(t => t.Product).Include(t=>t.Order).Where(predicate);
         }
 
         }

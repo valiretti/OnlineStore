@@ -17,7 +17,7 @@ namespace OnlineStore.DAL.Repositories
             this.db = db;
         }
 
-        public virtual IEnumerable<T> GetAll()
+        public virtual IQueryable<T> GetAll()
         {
             return db.Set<T>();
         }

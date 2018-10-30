@@ -16,8 +16,9 @@ namespace OnlineStore.DAL.EF
         public ApplicationContext(string conectionString) : base(conectionString) { }
 
         public DbSet<ClientProfile> ClientProfiles { get; set; }
-        public DbSet<Phone> Phones { get; set; }
+        public DbSet<Product> Products { get; set; }
         public DbSet<Order> Orders { get; set; }
+        public DbSet<Category> Categories { get; set; }
         public DbSet<Company> Companies { get; set; }
         public DbSet<LineItem> LineItems { get; set; }
     }

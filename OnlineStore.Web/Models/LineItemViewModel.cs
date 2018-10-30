@@ -10,8 +10,8 @@ namespace OnlineStore.Web.Models
         public int Id { get; set; }
         public int Count { get; set; }
 
-        public int PhoneId { get; set; }
-        public PhoneViewModel PhoneViewModel { get; set; }
+        public int ProductId { get; set; }
+        public ProductViewModel ProductViewModel { get; set; }
 
         public int OrderId { get; set; }
         public OrderViewModel OrderViewModel { get; set; }

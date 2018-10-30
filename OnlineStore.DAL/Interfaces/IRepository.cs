@@ -9,7 +9,7 @@ namespace OnlineStore.DAL.Interfaces
 {
     public interface IRepository<T> where T : class
     {
-        IEnumerable<T> GetAll();
+        IQueryable<T> GetAll();
         T Get(int id);
         IQueryable<T> Find(Expression<Func<T, bool>> predicate);
         void Create(T item);

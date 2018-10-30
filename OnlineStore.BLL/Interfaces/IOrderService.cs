@@ -12,19 +12,28 @@ namespace OnlineStore.BLL.Interfaces
         void DeleteOrder(int id);
         void EditOrder(OrderDto orderDto);
 
-        PhoneDto GetPhone(int? id);
-        PhoneDto[] GetPhones(int[] ids);
-        IEnumerable<PhoneDto> GetPhones();
-        IEnumerable<PhoneDto> GetCertainBrandPhones(int? companyId);
+        ProductDto GetProduct(int? id);
+        ProductDto[] GetProducts(int[] ids);
+        IEnumerable<ProductDto> GetProducts();
+        IEnumerable<ProductDto> GetCertainBrandProducts(int? categoryId);
+        IEnumerable<ProductDto> GetCertainBrandProducts(int? companyId, int categoryId);
+        IEnumerable<ProductDto> GetCertainCategoryProducts(int? categoryId);
+        
 
-        void AddPhone(PhoneDto phone);
-        void DeletePhone(int id);
+        void AddProduct(ProductDto product);
+        void DeleteProduct(int id);
 
         void AddCompany(CompanyDto company);
         void DeleteCompany(int id);
-
         CompanyDto GetCompany(int? id);
         IEnumerable<CompanyDto> GetCompanies();
+        IEnumerable<CompanyDto> GetCertainCategoryCompanies(int? categoryId);
+
+        void AddCategory(CategoryDto category);
+        void DeleteCategory(int id);
+        CategoryDto GetCategory(int? id);
+        IEnumerable<CategoryDto> GetCategories();
+       
 
         IEnumerable<LineItemDto> GetLineItemDtos(int orderId);
         LineItemDto GetLineItemDto(int id);

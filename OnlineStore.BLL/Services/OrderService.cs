@@ -19,33 +19,79 @@ namespace OnlineStore.BLL.Services
         }
 
 
-        public void AddPhone(PhoneDto phoneDto)
+        public void AddProduct(ProductDto productDto)
         {
-            Company company = DataBase.Companies.Get(phoneDto.CompanyId);
-            if (company != null)
+            Company company = DataBase.Companies.Get(productDto.CompanyId);
+            Category category = DataBase.Categories.Get(productDto.CategoryId);
+            if (company != null && category!=null)
             {
-                Phone phone = new Phone
+                Product product = new Product
                 {
-                    Name = phoneDto.Name,
+                    Name = productDto.Name,
                     CompanyId = company.Id,
-                    PhoneDescription = phoneDto.PhoneDescription,
-                    Price = phoneDto.Price,
-                    ImagePath = phoneDto.ImagePath
+                    CategoryId = category.Id,
+                    ProductDescription = productDto.ProductDescription,
+                    Price = productDto.Price,
+                    ImagePath = productDto.ImagePath
 
                 };
-                DataBase.Phones.Create(phone);
+                DataBase.Products.Create(product);
                 DataBase.Save();
             }
         }
 
-        public void DeletePhone(int id)
+        public void DeleteProduct(int id)
         {
-            var phone = DataBase.Phones.Get(id);
-            if (phone != null)
+            var product = DataBase.Products.Get(id);
+            if (product != null)
             {
-                DataBase.Phones.Delete(phone.Id);
+                DataBase.Products.Delete(product.Id);
                 DataBase.Save();
             }
+        }
+
+        public void AddCategory(CategoryDto categoryDto)
+        {
+            if (categoryDto != null)
+            {
+                Category category = new Category()
+                {
+                    Name = categoryDto.Name
+                };
+                DataBase.Categories.Create(category);
+                DataBase.Save();
+            }
+
+        }
+
+        public void DeleteCategory(int id)
+        {
+            var category = DataBase.Categories.Get(id);
+            if (category != null)
+            {
+                var productDtos = GetCertainCategoryProducts(category.Id);
+                if (productDtos != null)
+                {
+                    DeleteProducts(productDtos);
+                    DataBase.Categories.Delete(category.Id);
+                    DataBase.Save();
+                }
+            }
+        }
+
+        public CategoryDto GetCategory(int? id)
+        {
+            if (id != null)
+            {
+                var category = DataBase.Categories.Get(id.Value);
+                if (category != null)
+                {
+                    return new CategoryDto() { Id = category.Id, Name = category.Name };
+                }
+
+                return null;
+            }
+            return null;
         }
 
         public void AddCompany(CompanyDto companyDto)
@@ -67,23 +113,23 @@ namespace OnlineStore.BLL.Services
             var company = DataBase.Companies.Get(id);
             if (company != null)
             {
-                var phoneDtos = GetCertainBrandPhones(company.Id);
+                var phoneDtos = GetCertainBrandProducts(company.Id);
                 if (phoneDtos != null)
                 {
-                    DeletePhones(phoneDtos);
+                    DeleteProducts(phoneDtos);
                     DataBase.Companies.Delete(company.Id);
                     DataBase.Save();
                 }
             }
         }
 
-        private void DeletePhones(IEnumerable<PhoneDto> phoneDtos)
+        private void DeleteProducts(IEnumerable<ProductDto> productDtos)
         {
-            foreach (var phoneDto in phoneDtos)
+            foreach (var productDto in productDtos)
             {
-                if (phoneDto != null)
+                if (productDto != null)
                 {
-                    DataBase.LineItems.Delete(phoneDto.Id);
+                    DataBase.LineItems.Delete(productDto.Id);
                 }
             }
         }
@@ -109,41 +155,93 @@ namespace OnlineStore.BLL.Services
             return mapper.Map<IEnumerable<Company>, List<CompanyDto>>(DataBase.Companies.GetAll());
         }
 
-        public PhoneDto GetPhone(int? id)
+        public IEnumerable<CategoryDto> GetCategories()
+        {
+            var mapper = new MapperConfiguration(c => c.CreateMap<Category, CategoryDto>()).CreateMapper();
+            return mapper.Map<IEnumerable<Category>, List<CategoryDto>>(DataBase.Categories.GetAll());
+        }
+
+        public ProductDto GetProduct(int? id)
         {
             if (id != null)
             {
-                var phone = DataBase.Phones.Get(id.Value);
+                var phone = DataBase.Products.Get(id.Value);
                 if (phone != null)
                 {
-                    return new PhoneDto { Name = phone.Name, CompanyId = phone.CompanyId, PhoneDescription = phone.PhoneDescription, Price = phone.Price, Id = phone.Id };
+                    return new ProductDto { Name = phone.Name, CompanyId = phone.CompanyId, ProductDescription = phone.ProductDescription, Price = phone.Price, Id = phone.Id };
                 }
 
                 return null;
             }
             return null;
         }
-        public PhoneDto[] GetPhones(int[] ids)
+        public ProductDto[] GetProducts(int[] ids)
         {
-            var phones = DataBase.Phones.Find(t => ids.Contains(t.Id)).ToList();
-            var mapper = new MapperConfiguration(c => c.CreateMap<Phone, PhoneDto>()).CreateMapper();
-            return mapper.Map<IEnumerable<Phone>, PhoneDto[]>(phones);
+            var phones = DataBase.Products.Find(t => ids.Contains(t.Id)).ToList();
+            var mapper = new MapperConfiguration(c => c.CreateMap<Product, ProductDto>()).CreateMapper();
+            return mapper.Map<IEnumerable<Product>, ProductDto[]>(phones);
         }
 
-        public IEnumerable<PhoneDto> GetPhones()
+        public IEnumerable<ProductDto> GetProducts()
         {
-            var mapper = new MapperConfiguration(c => c.CreateMap<Phone, PhoneDto>()).CreateMapper();
-            return mapper.Map<IEnumerable<Phone>, List<PhoneDto>>(DataBase.Phones.GetAll());
+            var mapper = new MapperConfiguration(c => c.CreateMap<Product, ProductDto>()).CreateMapper();
+            return mapper.Map<IEnumerable<Product>, List<ProductDto>>(DataBase.Products.GetAll());
         }
-        public IEnumerable<PhoneDto> GetCertainBrandPhones(int? companyId)
+        public IEnumerable<ProductDto> GetCertainBrandProducts(int? companyId)
         {
             if (companyId != null)
             {
                 var company = DataBase.Companies.Get(companyId.Value);
                 if (company != null)
                 {
-                    var mapper = new MapperConfiguration(c => c.CreateMap<Phone, PhoneDto>()).CreateMapper();
-                    return mapper.Map<IEnumerable<Phone>, List<PhoneDto>>(DataBase.Phones.GetAll().Where(t => t.Company == company));
+                    var mapper = new MapperConfiguration(c => c.CreateMap<Product, ProductDto>()).CreateMapper();
+                    return mapper.Map<IEnumerable<Product>, List<ProductDto>>(DataBase.Products.GetAll().Where(t => t.CompanyId == companyId));
+                }
+            }
+            return null;
+        }
+
+        public IEnumerable<ProductDto> GetCertainBrandProducts(int? companyId, int categoryId)
+        {
+            if (companyId != null)
+            {
+                var company = DataBase.Companies.Get(companyId.Value);
+                if (company != null)
+                {
+                    var mapper = new MapperConfiguration(c => c.CreateMap<Product, ProductDto>()).CreateMapper();
+                    return mapper.Map<IEnumerable<Product>, List<ProductDto>>(DataBase.Products.GetAll().Where(t => t.CompanyId == companyId).Where(t=>t.CategoryId==categoryId));
+                }
+            }
+            return null;
+        }
+
+
+        public IEnumerable<ProductDto> GetCertainCategoryProducts(int? categoryId)
+        {
+            if (categoryId != null)
+            {
+                var category = DataBase.Categories.Get(categoryId.Value);
+                if (category != null)
+                {
+                    var mapper = new MapperConfiguration(c => c.CreateMap<Product, ProductDto>()).CreateMapper();
+                    return mapper.Map<IEnumerable<Product>, List<ProductDto>>(DataBase.Products.GetAll().Where(t => t.Category.Id == categoryId));
+                }
+            }
+            return null;
+        }
+
+        public IEnumerable<CompanyDto> GetCertainCategoryCompanies(int? categoryId)
+        {
+            if (categoryId != null)
+            {
+                var category = DataBase.Categories.Get(categoryId.Value);
+                if (category != null)
+                {
+                  var companies = DataBase.Companies
+                        .Find(c => c.Products.Any(p => p.CategoryId == categoryId));
+
+                    var mapper = new MapperConfiguration(c => c.CreateMap<Company, CompanyDto>()).CreateMapper();
+                    return mapper.Map<IEnumerable<Company>, List<CompanyDto>>(companies);
                 }
             }
             return null;
@@ -189,7 +287,7 @@ namespace OnlineStore.BLL.Services
                     LineItem lineItem = new LineItem()
                     {
                         Count = lineItemDto.Count,
-                        PhoneId = lineItemDto.PhoneId,
+                        ProductId = lineItemDto.ProductId,
                         Order = order
                     };
                     DataBase.LineItems.Create(lineItem);
@@ -274,7 +372,7 @@ namespace OnlineStore.BLL.Services
             {
                 var mapper = new MapperConfiguration(c => c.CreateMap<LineItem, LineItemDto>()
                     .ForMember(x => x.OrderDto, s => s.MapFrom(t => t.Order)).
-                    ForMember(x => x.PhoneDto, s => s.MapFrom(t => t.Phone))).CreateMapper();
+                    ForMember(x => x.ProductDto, s => s.MapFrom(t => t.Product))).CreateMapper();
 
                 return mapper.Map<IEnumerable<LineItem>, List<LineItemDto>>(DataBase.LineItems.GetAll().Where(t => t.OrderId == order.Id));
             }
@@ -288,7 +386,7 @@ namespace OnlineStore.BLL.Services
             {
                 var mapper = new MapperConfiguration(c => c.CreateMap<LineItem, LineItemDto>()
                     .ForMember(x => x.OrderDto, s => s.MapFrom(t => t.Order)).
-                    ForMember(x => x.PhoneDto, s => s.MapFrom(t => t.Phone))).CreateMapper();
+                    ForMember(x => x.ProductDto, s => s.MapFrom(t => t.Product))).CreateMapper();
 
                 return mapper.Map<LineItem, LineItemDto>(DataBase.LineItems.Get(id));
             }

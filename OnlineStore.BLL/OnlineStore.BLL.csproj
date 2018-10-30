@@ -88,10 +88,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DTO\CategoryDto.cs" />
     <Compile Include="DTO\CompanyDto.cs" />
     <Compile Include="DTO\LineItemDto.cs" />
     <Compile Include="DTO\OrderDto.cs" />
-    <Compile Include="DTO\PhoneDto.cs" />
+    <Compile Include="DTO\ProductDto.cs" />
     <Compile Include="DTO\UserDto.cs" />
     <Compile Include="Infrastructure\BusinessModule.cs" />
     <Compile Include="Interfaces\IOrderService.cs" />

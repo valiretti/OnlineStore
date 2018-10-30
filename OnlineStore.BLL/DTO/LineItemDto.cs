@@ -11,8 +11,8 @@ namespace OnlineStore.BLL.DTO
         public int Id { get; set; }
         public int Count { get; set; }
 
-        public int PhoneId { get; set; }
-        public PhoneDto PhoneDto { get; set; }
+        public int ProductId { get; set; }
+        public ProductDto ProductDto { get; set; }
 
         public int OrderId { get; set; }
         public OrderDto OrderDto { get; set; }

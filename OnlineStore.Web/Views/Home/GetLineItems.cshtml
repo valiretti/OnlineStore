@@ -8,20 +8,20 @@
     double totalCost = 0.0;
     foreach (var model in Model)
     {
-        totalCost += model.Count * Double.Parse(model.PhoneViewModel.Price);
+        totalCost += model.Count * Double.Parse(model.ProductViewModel.Price);
     }
 }
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.PhoneViewModel.Name)
+            @Html.DisplayNameFor(model => model.ProductViewModel.Name)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.Count)
         </th>
 
         <th>
-            @Html.DisplayNameFor(model => model.PhoneViewModel.Price)
+            @Html.DisplayNameFor(model => model.ProductViewModel.Price)
         </th>
 
         <th></th>
@@ -31,13 +31,13 @@
     {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.PhoneViewModel.Name)
+                @Html.DisplayFor(modelItem => item.ProductViewModel.Name)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Count)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.PhoneViewModel.Price)
+                @Html.DisplayFor(modelItem => item.ProductViewModel.Price)
             </td>
             <td>
                 @Html.ActionLink("Delete", "DeleteLineItem", new { id = item.Id })

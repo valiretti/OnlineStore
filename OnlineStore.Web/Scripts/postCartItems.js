@@ -16,7 +16,7 @@ function sendJson(parameters) {
     for (let item of itemsId) {
         let cartItem =
         {
-            phoneId: item,
+            productId: item,
             count: countItems(item)
         };
         cartItems.push(cartItem);

@@ -33,7 +33,7 @@ function displayItemsInCart(data) {
             strResult += "<tr><td>" +
                 encodeHTML(item.Name) +
                 "</td><td> " +
-                encodeHTML(item.PhoneDescription) +
+                encodeHTML(item.ProductDescription) +
                 "</td><td>" +
                 encodeHTML(item.Price) +
                 "</td><td><a style='cursor:pointer;text-decoration: none;' data-id='" +

@@ -1,24 +1,23 @@
-﻿@model IEnumerable<OnlineStore.Web.Models.CompanyViewModel>
+﻿@model IEnumerable<OnlineStore.Web.Models.CategoryViewModel>
 @{
-    ViewBag.Title = "Get Companies";
+    ViewBag.Title = "Get Categories";
 }
-<p></p>
-@Html.ActionLink("Мобильные телефоны", "GetPhones")
+
 <table class="table">
     @foreach (var item in Model)
     {
         <tr>
             <td>
-                @Html.ActionLink(item.Name, "GetCertainBrendPhones", new { id = item.Id })
+                @Html.ActionLink(item.Name, "GetCertainCategoryProducts", new { id = item.Id })
+                @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+                {
+                    @Html.ActionLink(" | Delete", "DeleteCategory", new { id = item.Id })
+                }
+
+                @{
+                    Html.RenderAction("GetCompaniesForCategory", "Home", new { categoryId = item.Id });
+                }
             </td>
-
-            @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
-            {
-
-                <td>
-                    @Html.ActionLink("Delete", "DeleteCompany", new { id = item.Id })
-                </td>
-            }
         </tr>
     }
 

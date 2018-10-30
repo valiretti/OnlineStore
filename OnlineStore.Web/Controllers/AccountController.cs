@@ -15,7 +15,7 @@ namespace OnlineStore.Web.Controllers
 {
     public class AccountController : Controller
     {
-        
+
         private IUserService UserService => HttpContext.GetOwinContext().GetUserManager<IUserService>();
 
         private IAuthenticationManager AuthenticationManager => HttpContext.GetOwinContext().Authentication;
@@ -79,9 +79,9 @@ namespace OnlineStore.Web.Controllers
                     Role = "User"
                 };
                 string result = await UserService.Create(userDto);
-                if (result=="OK")
+                if (result == "OK")
                     return View("SuccessfullRegister");
-               else
+                else
                     ModelState.AddModelError("", result);
             }
             return View(model);
@@ -97,7 +97,7 @@ namespace OnlineStore.Web.Controllers
                 Address = "ул. Спортивная, д.30, кв.75",
                 Role = "Admin",
                 PhoneNumber = "1234567"
-            }, new List<string> { "User", "Admin", "Manager" });
+            }, new List<string> { "Admin", "Manager", "User" });
         }
 
         public ActionResult AddManager()
@@ -127,7 +127,7 @@ namespace OnlineStore.Web.Controllers
                 else
                     ModelState.AddModelError("", result);
             }
-            return View("Register",model);
+            return View("Register", model);
         }
     }
 }

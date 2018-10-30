@@ -15,7 +15,8 @@ namespace OnlineStore.DAL.Interfaces
         ApplicationRoleManager RoleManager { get; }
         Task SaveAsync();
 
-        IRepository<Phone> Phones { get; }
+        IRepository<Product> Products { get; }
+        IRepository<Category> Categories { get; }
         IRepository<Order> Orders { get; }
         IRepository<Company> Companies { get; }
         IRepository<LineItem> LineItems { get; }

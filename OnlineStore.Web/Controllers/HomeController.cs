@@ -23,63 +23,87 @@ namespace OnlineStore.Web.Controllers
 
         public ActionResult Index()
         {
-            IEnumerable<CompanyDto> companyDtos = orderService.GetCompanies();
+            IEnumerable<CategoryDto> categoryDtos = orderService.GetCategories();
+            var mapper = new MapperConfiguration(c => c.CreateMap<CategoryDto, CategoryViewModel>()).CreateMapper();
+            var categories = mapper.Map<IEnumerable<CategoryDto>, List<CategoryViewModel>>(categoryDtos);
+
+            return View(categories);
+        }
+
+        public ActionResult GetProducts()
+        {
+            IEnumerable<ProductDto> productDtos = orderService.GetProducts();
+            var mapper = new MapperConfiguration(c => c.CreateMap<ProductDto, ProductViewModel>()).CreateMapper();
+            var products = mapper.Map<IEnumerable<ProductDto>, List<ProductViewModel>>(productDtos);
+            return View(products);
+        }
+
+        public ActionResult GetCompaniesForCategory(int categoryId)
+        {
+
+            IEnumerable<CompanyDto> companyDtos = orderService.GetCertainCategoryCompanies(categoryId);
             var mapper = new MapperConfiguration(c => c.CreateMap<CompanyDto, CompanyViewModel>()).CreateMapper();
             var companies = mapper.Map<IEnumerable<CompanyDto>, List<CompanyViewModel>>(companyDtos);
-            return View(companies);
+            ViewBag.Category = categoryId;
+            return PartialView("CompaniesForCategory",companies);
         }
 
-        public ActionResult GetPhones()
+        public ActionResult GetCertainBrendProducts(int id, int categoryId)
         {
-            IEnumerable<PhoneDto> phoneDtos = orderService.GetPhones();
-            var mapper = new MapperConfiguration(c => c.CreateMap<PhoneDto, PhoneViewModel>()).CreateMapper();
-            var phones = mapper.Map<IEnumerable<PhoneDto>, List<PhoneViewModel>>(phoneDtos);
-            return View(phones);
+            IEnumerable<ProductDto> productDtos = orderService.GetCertainBrandProducts(id, categoryId);
+            var mapper = new MapperConfiguration(c => c.CreateMap<ProductDto, ProductViewModel>()).CreateMapper();
+            var products = mapper.Map<IEnumerable<ProductDto>, List<ProductViewModel>>(productDtos);
+            return View("GetProducts", products);
         }
 
-        public ActionResult GetCertainBrendPhones(int id)
+        public ActionResult GetCertainCategoryProducts(int id)
         {
-            IEnumerable<PhoneDto> phoneDtos = orderService.GetCertainBrandPhones(id);
-            var mapper = new MapperConfiguration(c => c.CreateMap<PhoneDto, PhoneViewModel>()).CreateMapper();
-            var phones = mapper.Map<IEnumerable<PhoneDto>, List<PhoneViewModel>>(phoneDtos);
-            return View("GetPhones", phones);
+            IEnumerable<ProductDto> productDtos = orderService.GetCertainCategoryProducts(id);
+            var mapper = new MapperConfiguration(c => c.CreateMap<ProductDto, ProductViewModel>()).CreateMapper();
+            var products = mapper.Map<IEnumerable<ProductDto>, List<ProductViewModel>>(productDtos);
+            return View("GetProducts", products);
         }
 
         [HttpGet]
-        public ActionResult AddPhone()
+        public ActionResult AddProduct()
         {
             SelectList companies = new SelectList(orderService.GetCompanies(), "Id", "Name");
+            SelectList categories = new SelectList(orderService.GetCategories(), "Id", "Name");
+            ViewBag.Categories = categories;
             ViewBag.Companies = companies;
             return View();
         }
 
         [HttpPost]
-        public ActionResult AddPhone(PhoneViewModel phone, HttpPostedFileBase image)
+        public ActionResult AddProduct(ProductViewModel product, HttpPostedFileBase image)
         {
             if (ModelState.IsValid)
             {
-                string imagePath=null;
-                if (image!=null)
+                string imagePath = null;
+                if (image != null)
                 {
                     imagePath = $"{Guid.NewGuid():N}{Path.GetExtension(image.FileName)}";
                     image.SaveAs(Server.MapPath("~/Files/Images/" + imagePath));
                 }
 
-                var phoneDto = new PhoneDto
+                var productDto = new ProductDto
                 {
-                    Name = phone.Name,
-                    PhoneDescription = phone.PhoneDescription,
-                    CompanyId = int.Parse(phone.CompanyId),
-                    Price = decimal.Parse(phone.Price),
-                    ImagePath = imagePath 
+                    Name = product.Name,
+                    ProductDescription = product.ProductDescription,
+                    CompanyId = int.Parse(product.CompanyId),
+                    CategoryId = int.Parse(product.CategoryId),
+                    Price = decimal.Parse(product.Price),
+                    ImagePath = imagePath
                 };
-                orderService.AddPhone(phoneDto);
-                return RedirectToAction("GetPhones");
+                orderService.AddProduct(productDto);
+                return RedirectToAction("GetProducts");
             }
 
             SelectList companies = new SelectList(orderService.GetCompanies(), "Id", "Name");
+            SelectList categories = new SelectList(orderService.GetCategories(), "Id", "Name");
+            ViewBag.Categories = categories;
             ViewBag.Companies = companies;
-            return View(phone);
+            return View(product);
         }
 
         [HttpGet]
@@ -104,22 +128,64 @@ namespace OnlineStore.Web.Controllers
             return View(company);
         }
 
-
-
         [HttpGet]
-        public ActionResult DeletePhone(int id)
+        public ActionResult AddCategory()
         {
-            PhoneDto phoneDto = orderService.GetPhone(id);
-            var mapper = new MapperConfiguration(c => c.CreateMap<PhoneDto, PhoneViewModel>()).CreateMapper();
-            var phone = mapper.Map<PhoneDto, PhoneViewModel>(phoneDto);
-            return View(phone);
+            return View();
         }
 
         [HttpPost]
-        public ActionResult DeletePhone(PhoneViewModel phone)
+        public ActionResult AddCategory(CategoryViewModel category)
         {
-            orderService.DeletePhone(phone.Id);
-            return RedirectToAction("GetPhones");
+            if (ModelState.IsValid)
+            {
+                var categoryDto = new CategoryDto()
+                {
+                    Name = category.Name
+                };
+                orderService.AddCategory(categoryDto);
+                return RedirectToAction("Index");
+            }
+
+            return View(category);
+        }
+
+        [HttpGet]
+        public ActionResult DeleteCategory(int id)
+        {
+            CategoryDto categoryDto = orderService.GetCategory(id);
+            if (categoryDto != null)
+            {
+                var mapper = new MapperConfiguration(c => c.CreateMap<CategoryDto, CategoryViewModel>()).CreateMapper();
+                var category = mapper.Map<CategoryDto, CategoryViewModel>(categoryDto);
+
+                return View(category);
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public ActionResult DeleteCategory(CategoryViewModel category)
+        {
+            orderService.DeleteCategory(category.Id);
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public ActionResult DeleteProduct(int id)
+        {
+            ProductDto productDto = orderService.GetProduct(id);
+            var mapper = new MapperConfiguration(c => c.CreateMap<ProductDto, ProductViewModel>()).CreateMapper();
+            var product = mapper.Map<ProductDto, ProductViewModel>(productDto);
+            return View(product);
+        }
+
+        [HttpPost]
+        public ActionResult DeleteProduct(ProductViewModel product)
+        {
+            orderService.DeleteProduct(product.Id);
+            return RedirectToAction("GetProducts");
         }
 
 
@@ -154,10 +220,10 @@ namespace OnlineStore.Web.Controllers
                 int[] items = JsonConvert.DeserializeObject<int[]>(json);
                 if (items != null)
                 {
-                    PhoneDto[] phoneDtos = orderService.GetPhones(items);
-                    var mapper = new MapperConfiguration(c => c.CreateMap<PhoneDto, PhoneViewModel>()).CreateMapper();
-                    PhoneViewModel[] phones = mapper.Map<IEnumerable<PhoneDto>, PhoneViewModel[]>(phoneDtos);
-                    return Json(phones, JsonRequestBehavior.AllowGet);
+                    ProductDto[] productDtos = orderService.GetProducts(items);
+                    var mapper = new MapperConfiguration(c => c.CreateMap<ProductDto, ProductViewModel>()).CreateMapper();
+                    ProductViewModel[] products = mapper.Map<IEnumerable<ProductDto>, ProductViewModel[]>(productDtos);
+                    return Json(products, JsonRequestBehavior.AllowGet);
                 }
 
             }
@@ -210,7 +276,7 @@ namespace OnlineStore.Web.Controllers
                         var lineItemDto = new LineItemDto()
                         {
                             Count = item.Count,
-                            PhoneId = item.PhoneId,
+                            ProductId = item.ProductId,
                         };
                         lineItemDtos.Add(lineItemDto);
                     }
@@ -258,7 +324,7 @@ namespace OnlineStore.Web.Controllers
             {
                 IEnumerable<LineItemDto> lineItemDtosDtos = orderService.GetLineItemDtos(id.Value);
                 var mapper = new MapperConfiguration(c => c.CreateMap<LineItemDto, LineItemViewModel>()
-                    .ForMember(x => x.PhoneViewModel, s => s.MapFrom(t => t.PhoneDto))
+                    .ForMember(x => x.ProductViewModel, s => s.MapFrom(t => t.ProductDto))
                     .ForMember(t => t.OrderViewModel, s => s.MapFrom(x => x.OrderDto))
                     .IgnoreAllPropertiesWithAnInaccessibleSetter()).CreateMapper();
                 var lineItems = mapper.Map<IEnumerable<LineItemDto>, List<LineItemViewModel>>(lineItemDtosDtos);
@@ -415,7 +481,7 @@ namespace OnlineStore.Web.Controllers
                 if (lineItemDto != null)
                 {
                     var mapper = new MapperConfiguration(c => c.CreateMap<LineItemDto, LineItemViewModel>()
-                            .ForMember(x => x.PhoneViewModel, s => s.MapFrom(t => t.PhoneDto))).CreateMapper();
+                            .ForMember(x => x.ProductViewModel, s => s.MapFrom(t => t.ProductDto))).CreateMapper();
                     var lineItem = mapper.Map<LineItemDto, LineItemViewModel>(lineItemDto);
 
                     return View(lineItem);
