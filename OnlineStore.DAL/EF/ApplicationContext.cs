@@ -1,18 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Data.Entity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using OnlineStore.DAL.Entities;
-using OnlineStore.DAL.Identity;
 
 namespace OnlineStore.DAL.EF
 {
     public class ApplicationContext : IdentityDbContext<ApplicationUser>
     {
-       
+        static ApplicationContext()
+        {
+            Database.SetInitializer<ApplicationContext>(new AppInitializer());
+        }
+
         public ApplicationContext(string conectionString) : base(conectionString) { }
 
         public DbSet<ClientProfile> ClientProfiles { get; set; }

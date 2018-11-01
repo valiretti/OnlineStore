@@ -2,26 +2,21 @@
 
 namespace OnlineStore.Web.Models
 {
-    public class OrderViewModelForCart
+    public class ClientProfileViewModel
     {
-        public int Id { get; set; }
+        [Required(ErrorMessage = "Поле должно быть заполнено")]
+        public string Email { get; set; }
 
-        public string Items { get; set; }
+        [Required(ErrorMessage = "Поле должно быть заполнено")]
+        [Display(Name = "Адрес")]
+        public string Address { get; set; }
 
         [Required(ErrorMessage = "Поле должно быть заполнено")]
         [Display(Name = "Имя")]
         public string Name { get; set; }
 
         [Required(ErrorMessage = "Поле должно быть заполнено")]
-        [Display(Name = "Email")]
-        public string Email { get; set; }
-
-        [Required(ErrorMessage = "Поле должно быть заполнено")]
-        [Display(Name = "Адрес доставки")]
-        public string Address { get; set; }
-
-        [Required(ErrorMessage = "Поле должно быть заполнено")]
-        [Display(Name = "Телефон")]
+        [Display(Name = "Номер телефона")]
         public string PhoneNumber { get; set; }
     }
 }

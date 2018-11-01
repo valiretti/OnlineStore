@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using AutoMapper;
+using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using OnlineStore.BLL.DTO;
@@ -29,7 +28,6 @@ namespace OnlineStore.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Login(LoginModel model)
         {
-            await SetInitialDataAsync();
             if (ModelState.IsValid)
             {
                 UserDto userDto = new UserDto { Email = model.Email, Password = model.Password };
@@ -66,7 +64,6 @@ namespace OnlineStore.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Register(RegisterModel model)
         {
-            await SetInitialDataAsync();
             if (ModelState.IsValid)
             {
                 UserDto userDto = new UserDto
@@ -86,19 +83,6 @@ namespace OnlineStore.Web.Controllers
             }
             return View(model);
         }
-        private async Task SetInitialDataAsync()
-        {
-            await UserService.SetInitialData(new UserDto
-            {
-                Email = "admin@gmail.com",
-                UserName = "admin@gmail.com",
-                Password = "administrator",
-                Name = "Admin",
-                Address = "ул. Спортивная, д.30, кв.75",
-                Role = "Admin",
-                PhoneNumber = "1234567"
-            }, new List<string> { "Admin", "Manager", "User" });
-        }
 
         public ActionResult AddManager()
         {
@@ -109,7 +93,6 @@ namespace OnlineStore.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> AddManager(RegisterModel model)
         {
-            await SetInitialDataAsync();
             if (ModelState.IsValid)
             {
                 UserDto userDto = new UserDto
@@ -128,6 +111,62 @@ namespace OnlineStore.Web.Controllers
                     ModelState.AddModelError("", result);
             }
             return View("Register", model);
+        }
+
+        [HttpGet]
+        public ActionResult EditProfile()
+        {
+            var user = UserService.GetUserData(User.Identity.GetUserId());
+            if (user != null)
+            {
+                var mapper = new MapperConfiguration(c => c.CreateMap<UserDto, ClientProfileViewModel>()).CreateMapper();
+                var profile = mapper.Map<UserDto, ClientProfileViewModel>(user);
+                return View(profile);
+            }
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        [HttpPost]
+        public ActionResult EditProfile(ClientProfileViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var mapper = new MapperConfiguration(c => c.CreateMap<ClientProfileViewModel, UserDto>()).CreateMapper();
+                var userDto = mapper.Map<ClientProfileViewModel, UserDto>(model);
+                UserService.EditProfile(userDto, User.Identity.GetUserId());
+
+                return RedirectToAction("Index", "Home");
+            }
+
+            return View(model);
+        }
+
+        [HttpGet]
+        public ActionResult EditPassword()
+        {
+            var user = UserService.GetUserData(User.Identity.GetUserId());
+            if (user != null)
+            {
+               return View();
+            }
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        [HttpPost]
+        public ActionResult EditPassword(PasswordChangeViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var mapper = new MapperConfiguration(c => c.CreateMap<PasswordChangeViewModel, UserDto>()).CreateMapper();
+                var userDto = mapper.Map<PasswordChangeViewModel, UserDto>(model);
+                UserService.EditPassword(userDto, User.Identity.GetUserId());
+
+                return RedirectToAction("Index", "Home");
+            }
+
+            return View(model);
         }
     }
 }

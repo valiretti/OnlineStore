@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
+﻿using System.Linq;
 using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using OnlineStore.BLL.DTO;
@@ -58,18 +54,54 @@ namespace OnlineStore.BLL.Services
             return claim;
         }
 
-        public async Task SetInitialData(UserDto adminDto, List<string> roles)
+        public UserDto GetUserData(string id)
         {
-            foreach (var roleName in roles)
+            var user = DataBase.ClientManager.GetClientProfile(id);
+            if (user != null)
             {
-                var role = await DataBase.RoleManager.FindByNameAsync(roleName);
-                if (role == null)
+                return new UserDto()
                 {
-                    role = new ApplicationRole { Name = roleName };
-                    await DataBase.RoleManager.CreateAsync(role);
-                }
+                    Name = user.Name,
+                    Address = user.Address,
+                    PhoneNumber = user.PhoneNumber,
+                    Email = user.Email
+                };
+            }
 
-                await Create(adminDto);
+            return null;
+        }
+
+        public void EditProfile(UserDto userDto, string userId)
+        {
+            var user = DataBase.UserManager.FindById(userId);
+            if (user != null)
+            {
+                user.Email = userDto.Email;
+                user.UserName = userDto.Email;
+            }
+
+            var result = DataBase.UserManager.Update(user);
+            if (result.Succeeded)
+            {
+                var profile = DataBase.ClientManager.GetClientProfile(userId);
+
+                profile.Name = userDto.Name;
+                profile.Address = userDto.Address;
+                profile.Email = userDto.Email;
+                profile.PhoneNumber = userDto.PhoneNumber;
+
+                DataBase.ClientManager.Update(profile);
+                DataBase.Save();
+            }
+        }
+
+        public void EditPassword(UserDto userDto, string userId)
+        {
+            var user = DataBase.UserManager.FindById(userId);
+            if (user != null)
+            {
+                user.PasswordHash = DataBase.UserManager.PasswordHasher.HashPassword(userDto.Password);
+                DataBase.UserManager.Update(user);
             }
         }
 
