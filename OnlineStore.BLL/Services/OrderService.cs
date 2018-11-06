@@ -18,12 +18,12 @@ namespace OnlineStore.BLL.Services
             DataBase = dataBase;
         }
 
-
+        #region Methods for products
         public void AddProduct(ProductDto productDto)
         {
             Company company = DataBase.Companies.Get(productDto.CompanyId);
             Category category = DataBase.Categories.Get(productDto.CategoryId);
-            if (company != null && category!=null)
+            if (company != null && category != null)
             {
                 Product product = new Product
                 {
@@ -39,7 +39,6 @@ namespace OnlineStore.BLL.Services
                 DataBase.Save();
             }
         }
-
         public void DeleteProduct(int id)
         {
             var product = DataBase.Products.Get(id);
@@ -48,117 +47,6 @@ namespace OnlineStore.BLL.Services
                 DataBase.Products.Delete(product.Id);
                 DataBase.Save();
             }
-        }
-
-        public void AddCategory(CategoryDto categoryDto)
-        {
-            if (categoryDto != null)
-            {
-                Category category = new Category()
-                {
-                    Name = categoryDto.Name
-                };
-                DataBase.Categories.Create(category);
-                DataBase.Save();
-            }
-
-        }
-
-        public void DeleteCategory(int id)
-        {
-            var category = DataBase.Categories.Get(id);
-            if (category != null)
-            {
-                var productDtos = GetCertainCategoryProducts(category.Id);
-                if (productDtos != null)
-                {
-                    DeleteProducts(productDtos);
-                    DataBase.Categories.Delete(category.Id);
-                    DataBase.Save();
-                }
-            }
-        }
-
-        public CategoryDto GetCategory(int? id)
-        {
-            if (id != null)
-            {
-                var category = DataBase.Categories.Get(id.Value);
-                if (category != null)
-                {
-                    return new CategoryDto() { Id = category.Id, Name = category.Name };
-                }
-
-                return null;
-            }
-            return null;
-        }
-
-        public void AddCompany(CompanyDto companyDto)
-        {
-            if (companyDto != null)
-            {
-                Company company = new Company
-                {
-                    Name = companyDto.Name
-                };
-                DataBase.Companies.Create(company);
-                DataBase.Save();
-            }
-
-        }
-
-        public void DeleteCompany(int id)
-        {
-            var company = DataBase.Companies.Get(id);
-            if (company != null)
-            {
-                var phoneDtos = GetCertainBrandProducts(company.Id);
-                if (phoneDtos != null)
-                {
-                    DeleteProducts(phoneDtos);
-                    DataBase.Companies.Delete(company.Id);
-                    DataBase.Save();
-                }
-            }
-        }
-
-        private void DeleteProducts(IEnumerable<ProductDto> productDtos)
-        {
-            foreach (var productDto in productDtos)
-            {
-                if (productDto != null)
-                {
-                    DataBase.LineItems.Delete(productDto.Id);
-                }
-            }
-        }
-
-        public CompanyDto GetCompany(int? id)
-        {
-            if (id != null)
-            {
-                var company = DataBase.Companies.Get(id.Value);
-                if (company != null)
-                {
-                    return new CompanyDto { Id = company.Id, Name = company.Name };
-                }
-
-                return null;
-            }
-            return null;
-        }
-
-        public IEnumerable<CompanyDto> GetCompanies()
-        {
-            var mapper = new MapperConfiguration(c => c.CreateMap<Company, CompanyDto>()).CreateMapper();
-            return mapper.Map<IEnumerable<Company>, List<CompanyDto>>(DataBase.Companies.GetAll());
-        }
-
-        public IEnumerable<CategoryDto> GetCategories()
-        {
-            var mapper = new MapperConfiguration(c => c.CreateMap<Category, CategoryDto>()).CreateMapper();
-            return mapper.Map<IEnumerable<Category>, List<CategoryDto>>(DataBase.Categories.GetAll());
         }
 
         public ProductDto GetProduct(int? id)
@@ -187,19 +75,7 @@ namespace OnlineStore.BLL.Services
             var mapper = new MapperConfiguration(c => c.CreateMap<Product, ProductDto>()).CreateMapper();
             return mapper.Map<IEnumerable<Product>, List<ProductDto>>(DataBase.Products.GetAll());
         }
-        public IEnumerable<ProductDto> GetCertainBrandProducts(int? companyId)
-        {
-            if (companyId != null)
-            {
-                var company = DataBase.Companies.Get(companyId.Value);
-                if (company != null)
-                {
-                    var mapper = new MapperConfiguration(c => c.CreateMap<Product, ProductDto>()).CreateMapper();
-                    return mapper.Map<IEnumerable<Product>, List<ProductDto>>(DataBase.Products.GetAll().Where(t => t.CompanyId == companyId));
-                }
-            }
-            return null;
-        }
+
 
         public IEnumerable<ProductDto> GetCertainBrandProducts(int? companyId, int categoryId)
         {
@@ -209,43 +85,175 @@ namespace OnlineStore.BLL.Services
                 if (company != null)
                 {
                     var mapper = new MapperConfiguration(c => c.CreateMap<Product, ProductDto>()).CreateMapper();
-                    return mapper.Map<IEnumerable<Product>, List<ProductDto>>(DataBase.Products.GetAll().Where(t => t.CompanyId == companyId).Where(t=>t.CategoryId==categoryId));
+                    return mapper.Map<IEnumerable<Product>, List<ProductDto>>(DataBase.Products.GetAll().Where(t => t.CompanyId == companyId).Where(t => t.CategoryId == categoryId));
                 }
             }
             return null;
         }
 
-
-        public IEnumerable<ProductDto> GetCertainCategoryProducts(int? categoryId)
+        public IEnumerable<ProductDto> GetCertainCategoryProducts(int categoryId)
         {
-            if (categoryId != null)
+            var category = DataBase.Categories.Get(categoryId);
+            if (category != null)
             {
-                var category = DataBase.Categories.Get(categoryId.Value);
-                if (category != null)
-                {
-                    var mapper = new MapperConfiguration(c => c.CreateMap<Product, ProductDto>()).CreateMapper();
-                    return mapper.Map<IEnumerable<Product>, List<ProductDto>>(DataBase.Products.GetAll().Where(t => t.Category.Id == categoryId));
-                }
+                var mapper = new MapperConfiguration(c => c.CreateMap<Product, ProductDto>()).CreateMapper();
+                return mapper.Map<IEnumerable<Product>, List<ProductDto>>(DataBase.Products.GetAll().Where(t => t.Category.Id == categoryId));
             }
             return null;
         }
 
-        public IEnumerable<CompanyDto> GetCertainCategoryCompanies(int? categoryId)
+        private IEnumerable<ProductDto> GetCertainBrandProducts(int companyId)
         {
-            if (categoryId != null)
-            {
-                var category = DataBase.Categories.Get(categoryId.Value);
-                if (category != null)
-                {
-                  var companies = DataBase.Companies
-                        .Find(c => c.Products.Any(p => p.CategoryId == categoryId));
+            var mapper = new MapperConfiguration(c => c.CreateMap<Product, ProductDto>()).CreateMapper();
+            return mapper.Map<IEnumerable<Product>, List<ProductDto>>(DataBase.Products.GetAll()
+                .Where(t => t.CompanyId == companyId));
+        }
 
-                    var mapper = new MapperConfiguration(c => c.CreateMap<Company, CompanyDto>()).CreateMapper();
-                    return mapper.Map<IEnumerable<Company>, List<CompanyDto>>(companies);
+        private void DeleteProducts(IEnumerable<ProductDto> productDtos)
+        {
+            foreach (var productDto in productDtos)
+            {
+                if (productDto != null)
+                {
+                    DataBase.LineItems.Delete(productDto.Id);
                 }
             }
+        }
+        #endregion
+
+        #region Methods for categories
+        public string AddCategory(CategoryDto categoryDto)
+        {
+            var cat = DataBase.Categories.GetAll().FirstOrDefault(c => c.Name == categoryDto.Name);
+            if (cat != null)
+            {
+                return "Category already exists";
+            }
+
+            Category category = new Category()
+            {
+                Name = categoryDto.Name
+            };
+            DataBase.Categories.Create(category);
+            DataBase.Save();
+
+            return "OK";
+        }
+
+        public void DeleteCategory(int id)
+        {
+            var category = DataBase.Categories.Get(id);
+            if (category != null)
+            {
+                var productDtos = GetCertainCategoryProducts(category.Id);
+                if (productDtos != null)
+                {
+                    DeleteProducts(productDtos);
+                    DataBase.Categories.Delete(category.Id);
+                    DataBase.Save();
+                }
+            }
+        }
+
+        public CategoryDto GetCategory(int id)
+        {
+            var category = DataBase.Categories.Get(id);
+            if (category == null) return null;
+
+            return new CategoryDto { Id = category.Id, Name = category.Name };
+        }
+
+        public IEnumerable<CategoryDto> GetCategories()
+        {
+            var mapper = new MapperConfiguration(c => c.CreateMap<Category, CategoryDto>()).CreateMapper();
+            return mapper.Map<IEnumerable<Category>, List<CategoryDto>>(DataBase.Categories.GetAll());
+        }
+        #endregion
+        
+        #region Methods for companies
+        public string AddCompany(CompanyDto companyDto)
+        {
+            var comp = DataBase.Companies.GetAll().FirstOrDefault(c => c.Name == companyDto.Name);
+            if (comp != null)
+            {
+                return "Company already exists";
+            }
+
+            Company company = new Company
+            {
+                Name = companyDto.Name
+            };
+
+            DataBase.Companies.Create(company);
+            DataBase.Save();
+
+            return "OK";
+        }
+
+        public IEnumerable<CompanyDto> GetCompanies()
+        {
+            var mapper = new MapperConfiguration(c => c.CreateMap<Company, CompanyDto>()).CreateMapper();
+            return mapper.Map<IEnumerable<Company>, List<CompanyDto>>(DataBase.Companies.GetAll());
+        }
+
+        public CompanyDto GetCompany(int id)
+        {
+            var company = DataBase.Companies.Get(id);
+            if (company != null)
+            {
+                return new CompanyDto { Id = company.Id, Name = company.Name };
+            }
+
             return null;
         }
+
+        public void DeleteCompany(int id)
+        {
+            var company = DataBase.Companies.Get(id);
+            if (company != null)
+            {
+                var productDtos = GetCertainBrandProducts(company.Id);
+                if (productDtos != null)
+                {
+                    DeleteProducts(productDtos);
+                    DataBase.Companies.Delete(company.Id);
+                    DataBase.Save();
+                }
+            }
+        }
+
+        public IEnumerable<CompanyDto> GetCertainCategoryCompanies(int categoryId)
+        {
+            var category = DataBase.Categories.Get(categoryId);
+            if (category == null) return null;
+
+            var companies = DataBase.Companies
+                .Find(c => c.Products.Any(p => p.CategoryId == categoryId));
+            if (companies == null) return null;
+
+            var mapper = new MapperConfiguration(c => c.CreateMap<Company, CompanyDto>()).CreateMapper();
+            return mapper.Map<IEnumerable<Company>, List<CompanyDto>>(companies);
+
+
+        }
+
+        
+        #endregion
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         public UserDto GetUserData(string id)
         {

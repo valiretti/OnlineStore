@@ -30,38 +30,13 @@ namespace OnlineStore.Web.Controllers
             return View(categories);
         }
 
+        #region Methods for products
         public ActionResult GetProducts()
         {
             IEnumerable<ProductDto> productDtos = orderService.GetProducts();
             var mapper = new MapperConfiguration(c => c.CreateMap<ProductDto, ProductViewModel>()).CreateMapper();
             var products = mapper.Map<IEnumerable<ProductDto>, List<ProductViewModel>>(productDtos);
             return View(products);
-        }
-
-        public ActionResult GetCompaniesForCategory(int categoryId)
-        {
-
-            IEnumerable<CompanyDto> companyDtos = orderService.GetCertainCategoryCompanies(categoryId);
-            var mapper = new MapperConfiguration(c => c.CreateMap<CompanyDto, CompanyViewModel>()).CreateMapper();
-            var companies = mapper.Map<IEnumerable<CompanyDto>, List<CompanyViewModel>>(companyDtos);
-            ViewBag.Category = categoryId;
-            return PartialView("CompaniesForCategory",companies);
-        }
-
-        public ActionResult GetCertainBrendProducts(int id, int categoryId)
-        {
-            IEnumerable<ProductDto> productDtos = orderService.GetCertainBrandProducts(id, categoryId);
-            var mapper = new MapperConfiguration(c => c.CreateMap<ProductDto, ProductViewModel>()).CreateMapper();
-            var products = mapper.Map<IEnumerable<ProductDto>, List<ProductViewModel>>(productDtos);
-            return View("GetProducts", products);
-        }
-
-        public ActionResult GetCertainCategoryProducts(int id)
-        {
-            IEnumerable<ProductDto> productDtos = orderService.GetCertainCategoryProducts(id);
-            var mapper = new MapperConfiguration(c => c.CreateMap<ProductDto, ProductViewModel>()).CreateMapper();
-            var products = mapper.Map<IEnumerable<ProductDto>, List<ProductViewModel>>(productDtos);
-            return View("GetProducts", products);
         }
 
         [HttpGet]
@@ -95,6 +70,7 @@ namespace OnlineStore.Web.Controllers
                     Price = decimal.Parse(product.Price),
                     ImagePath = imagePath
                 };
+
                 orderService.AddProduct(productDto);
                 return RedirectToAction("GetProducts");
             }
@@ -106,6 +82,60 @@ namespace OnlineStore.Web.Controllers
             return View(product);
         }
 
+        public ActionResult GetCertainBrendProducts(int id, int categoryId)
+        {
+            IEnumerable<ProductDto> productDtos = orderService.GetCertainBrandProducts(id, categoryId);
+            var mapper = new MapperConfiguration(c => c.CreateMap<ProductDto, ProductViewModel>()).CreateMapper();
+            var products = mapper.Map<IEnumerable<ProductDto>, List<ProductViewModel>>(productDtos);
+            return View("GetProducts", products);
+        }
+
+        public ActionResult GetCertainCategoryProducts(int id)
+        {
+            IEnumerable<ProductDto> productDtos = orderService.GetCertainCategoryProducts(id);
+            var mapper = new MapperConfiguration(c => c.CreateMap<ProductDto, ProductViewModel>()).CreateMapper();
+            var products = mapper.Map<IEnumerable<ProductDto>, List<ProductViewModel>>(productDtos);
+            return View("GetProducts", products);
+        }
+
+        [HttpGet]
+        public ActionResult DeleteProduct(int id)
+        {
+            ProductDto productDto = orderService.GetProduct(id);
+            var mapper = new MapperConfiguration(c => c.CreateMap<ProductDto, ProductViewModel>()).CreateMapper();
+            var product = mapper.Map<ProductDto, ProductViewModel>(productDto);
+            return View(product);
+        }
+
+        [HttpPost]
+        public ActionResult DeleteProduct(ProductViewModel product)
+        {
+            orderService.DeleteProduct(product.Id);
+            return RedirectToAction("GetProducts");
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public JsonResult GetProductsForCart(string json)
+        {
+            if (json != null)
+            {
+                int[] items = JsonConvert.DeserializeObject<int[]>(json);
+                if (items != null)
+                {
+                    ProductDto[] productDtos = orderService.GetProducts(items);
+                    var mapper = new MapperConfiguration(c => c.CreateMap<ProductDto, ProductViewModel>()).CreateMapper();
+                    ProductViewModel[] products = mapper.Map<IEnumerable<ProductDto>, ProductViewModel[]>(productDtos);
+                    return Json(products, JsonRequestBehavior.AllowGet);
+                }
+
+            }
+
+            return Json(new int[0], JsonRequestBehavior.AllowGet);
+        }
+        #endregion
+
+        #region Methods for companies
         [HttpGet]
         public ActionResult AddCompany()
         {
@@ -117,17 +147,65 @@ namespace OnlineStore.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                var companyDto = new CompanyDto()
+                var companyDto = new CompanyDto
                 {
                     Name = company.Name
                 };
-                orderService.AddCompany(companyDto);
-                return RedirectToAction("Index");
+
+                var result = orderService.AddCompany(companyDto);
+                if (result == "OK")
+                {
+                    return RedirectToAction("GetCompanies");
+                }
+
+                ModelState.AddModelError("", result);
             }
 
             return View(company);
         }
 
+        public ActionResult GetCompanies()
+        {
+            IEnumerable<CompanyDto> companyDtos = orderService.GetCompanies();
+            var mapper = new MapperConfiguration(c => c.CreateMap<CompanyDto, CompanyViewModel>()).CreateMapper();
+            var categories = mapper.Map<IEnumerable<CompanyDto>, List<CompanyViewModel>>(companyDtos);
+            return View(categories);
+        }
+
+        [HttpGet]
+        public ActionResult DeleteCompany(int id)
+        {
+            CompanyDto companyDto = orderService.GetCompany(id);
+            if (companyDto != null)
+            {
+                var mapper = new MapperConfiguration(c => c.CreateMap<CompanyDto, CompanyViewModel>()).CreateMapper();
+                var company = mapper.Map<CompanyDto, CompanyViewModel>(companyDto);
+
+                return View(company);
+            }
+
+            return RedirectToAction("GetCompanies");
+        }
+
+        [HttpPost]
+        public ActionResult DeleteCompany(CompanyViewModel company)
+        {
+            orderService.DeleteCompany(company.Id);
+            return RedirectToAction("GetCompanies");
+        }
+
+        public ActionResult GetCompaniesForCategory(int categoryId)
+        {
+            IEnumerable<CompanyDto> companyDtos = orderService.GetCertainCategoryCompanies(categoryId);
+
+            var mapper = new MapperConfiguration(c => c.CreateMap<CompanyDto, CompanyViewModel>()).CreateMapper();
+            var companies = mapper.Map<IEnumerable<CompanyDto>, List<CompanyViewModel>>(companyDtos);
+            ViewBag.Category = categoryId;
+            return PartialView("CompaniesForCategory", companies);
+        }
+        #endregion
+
+        #region Methods for categories
         [HttpGet]
         public ActionResult AddCategory()
         {
@@ -143,8 +221,14 @@ namespace OnlineStore.Web.Controllers
                 {
                     Name = category.Name
                 };
-                orderService.AddCategory(categoryDto);
-                return RedirectToAction("Index");
+
+                var result = orderService.AddCategory(categoryDto);
+                if (result == "OK")
+                {
+                    return RedirectToAction("Index");
+                }
+
+                ModelState.AddModelError("", result);
             }
 
             return View(category);
@@ -171,65 +255,11 @@ namespace OnlineStore.Web.Controllers
             orderService.DeleteCategory(category.Id);
             return RedirectToAction("Index");
         }
-
-        [HttpGet]
-        public ActionResult DeleteProduct(int id)
-        {
-            ProductDto productDto = orderService.GetProduct(id);
-            var mapper = new MapperConfiguration(c => c.CreateMap<ProductDto, ProductViewModel>()).CreateMapper();
-            var product = mapper.Map<ProductDto, ProductViewModel>(productDto);
-            return View(product);
-        }
-
-        [HttpPost]
-        public ActionResult DeleteProduct(ProductViewModel product)
-        {
-            orderService.DeleteProduct(product.Id);
-            return RedirectToAction("GetProducts");
-        }
+        #endregion
 
 
-        [HttpGet]
-        public ActionResult DeleteCompany(int id)
-        {
-            CompanyDto companyDto = orderService.GetCompany(id);
-            if (companyDto != null)
-            {
-                var mapper = new MapperConfiguration(c => c.CreateMap<CompanyDto, CompanyViewModel>()).CreateMapper();
-                var company = mapper.Map<CompanyDto, CompanyViewModel>(companyDto);
 
-                return View(company);
-            }
-
-            return RedirectToAction("Index");
-        }
-
-        [HttpPost]
-        public ActionResult DeleteCompany(CompanyViewModel company)
-        {
-            orderService.DeleteCompany(company.Id);
-            return RedirectToAction("Index");
-        }
-
-        [HttpGet]
-        [AllowAnonymous]
-        public JsonResult GetPhonesForCart(string json)
-        {
-            if (json != null)
-            {
-                int[] items = JsonConvert.DeserializeObject<int[]>(json);
-                if (items != null)
-                {
-                    ProductDto[] productDtos = orderService.GetProducts(items);
-                    var mapper = new MapperConfiguration(c => c.CreateMap<ProductDto, ProductViewModel>()).CreateMapper();
-                    ProductViewModel[] products = mapper.Map<IEnumerable<ProductDto>, ProductViewModel[]>(productDtos);
-                    return Json(products, JsonRequestBehavior.AllowGet);
-                }
-
-            }
-
-            return Json(new int[0], JsonRequestBehavior.AllowGet);
-        }
+        
 
         [HttpGet]
         public ActionResult Cart()

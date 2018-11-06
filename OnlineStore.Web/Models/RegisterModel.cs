@@ -4,30 +4,27 @@ namespace OnlineStore.Web.Models
 {
     public class RegisterModel
     {
-        [Required(ErrorMessage = "Поле должно быть заполнено")]
+        [Required(ErrorMessage = "Field must be filled")]
         public string Email { get; set; }
 
-        [Required(ErrorMessage = "Поле должно быть заполнено")]
-        [Display(Name = "Пароль")]
+        [Required(ErrorMessage = "Field must be filled")]
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
-        [Required(ErrorMessage = "Поле должно быть заполнено")]
-        [Display(Name = "Повторите пароль")]
+        [Required(ErrorMessage = "Field must be filled")]
+        [Display(Name = "Confirm Password")]
         [DataType(DataType.Password)]
-        [Compare("Password", ErrorMessage = "Пароли не совпадают")]
+        [Compare("Password", ErrorMessage = "Passwords don't match")]
         public string ConfirmPassword { get; set; }
 
-        [Required(ErrorMessage = "Поле должно быть заполнено")]
-        [Display(Name = "Адрес")]
+        [Required(ErrorMessage = "Field must be filled")]
         public string Address { get; set; }
 
-        [Required(ErrorMessage = "Поле должно быть заполнено")]
-        [Display(Name = "Имя")]
+        [Required(ErrorMessage = "Field must be filled")]
         public string Name { get; set; }
 
-        [Required(ErrorMessage = "Поле должно быть заполнено")]
-        [Display(Name = "Номер телефона")]
+        [Required(ErrorMessage = "Field must be filled")]
+        [Display(Name = "Phone Number")]
         public string PhoneNumber { get; set; }
     }
 }

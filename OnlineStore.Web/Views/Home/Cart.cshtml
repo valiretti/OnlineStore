@@ -3,18 +3,18 @@
     ViewBag.Title = "Cart";
 }
 
-<h2>Корзина</h2>
-<h4>Список товаров</h4>
+<h2>Your Cart</h2>
+<h4>List of goods</h4>
 
 <div id="cart_content"></div>
 @Scripts.Render("~/scripts/getItemsFromCart.js")
 
 <div class="form-group" style="display: none" id="order">
     <div class="col-md-offset-10 col-md-10">
-        <input type="button" value="Оформить заказ" onclick="orderProduct(this)" class="btn btn-default" />
+        <input type="button" value="Make Order" onclick="orderProduct(this)" class="btn btn-default" />
     </div>
 </div>
 
 <div>
-    @Html.ActionLink("Back to List", "Index")
+    @Html.ActionLink("Back to Home page", "Index")
 </div>

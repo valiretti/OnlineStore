@@ -1,0 +1,25 @@
+﻿@model IEnumerable<OnlineStore.Web.Models.CompanyViewModel>
+
+@{
+    ViewBag.Title = "GetCompanies";
+}
+
+<h2>All companies</h2>
+
+<table class="table table-borderless">
+   
+    @foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            
+                @Html.ActionLink(" | Delete", "DeleteCompany", new { id=item.Id })
+            </td>
+        </tr>
+    }
+
+</table>
+
+<div>
+    @Html.ActionLink("Back to Home page", "Index")
+</div>

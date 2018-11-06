@@ -14,7 +14,7 @@ function getCartItems() {
             }
         }
     }
-    request.open("GET", "/home/GetPhonesForCart?json=" + itemsId);
+    request.open("GET", "/home/GetProductsForCart?json=" + itemsId);
     request.send();
 }
 
@@ -28,7 +28,7 @@ document.onreadystatechange = function () {
 function displayItemsInCart(data) {
     var cartContent = JSON.parse(data);
     if (cartContent.length !== 0) {
-        var strResult = "<table><th>Название</th><th>Описание товара</th><th>Цена</th><th colspan='3'>Количество</th>";
+        var strResult = "<table><th>Name</th><th>Product description</th><th>Price</th><th colspan='3'>Count</th>";
         for (var item of cartContent) {
             strResult += "<tr><td>" +
                 encodeHTML(item.Name) +
@@ -45,11 +45,11 @@ function displayItemsInCart(data) {
                 "'onclick='plusItem(this);'> + </a>" +
                 "</td><td><a style=cursor:pointer data-item='" +
                 item.Id +
-                "'onclick='deleteItem(this);' >Удалить</a></td></tr> ";
+                "'onclick='deleteItem(this);' >Delete</a></td></tr> ";
         }
         strResult += "</table>";
         strResult += "<p><p/>";
-        strResult += "<p class='col-md-offset-9 col-md-10' > Общая стоимость: &nbsp; <span style='font-size: 20px'><strong>" +
+        strResult += "<p class='col-md-offset-9 col-md-10' > Total cost: &nbsp; <span style='font-size: 20px'><strong>" +
             totalCost(cartContent) + " руб.</strong></span></p>";
 
         document.getElementById('cart_content').innerHTML = strResult;
@@ -58,7 +58,7 @@ function displayItemsInCart(data) {
         document.getElementById('order').setAttribute("style", "display:block;");
 
     } else {
-        var str = "<p>Корзина пуста</p>";
+        var str = "<p>Cart empty</p>";
         document.getElementById('cart_content').innerHTML = str;
         document.getElementById('order').setAttribute("style", "display:none;");
 

@@ -4,7 +4,6 @@
     ViewBag.Title = "GetProducts";
 }
 
-
 <table class="table">
     <tr>
         <th>
@@ -46,7 +45,7 @@
             }
 
             <td>
-                <a class="add_item" data-id="@item.Id" href="#">Добавить в корзину</a>
+                <a class="add_item" data-id="@item.Id" href="#">To cart</a>
             </td>
         </tr>
     }
@@ -54,6 +53,6 @@
 </table>
 
 <div>
-    @Html.ActionLink("Back to List", "Index")
+    @Html.ActionLink("Back to Home page", "Index")
 </div>
 

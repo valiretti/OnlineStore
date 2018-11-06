@@ -4,19 +4,17 @@ namespace OnlineStore.Web.Models
 {
     public class ClientProfileViewModel
     {
-        [Required(ErrorMessage = "Поле должно быть заполнено")]
+        [Required(ErrorMessage = "Field must be filled")]
         public string Email { get; set; }
 
-        [Required(ErrorMessage = "Поле должно быть заполнено")]
-        [Display(Name = "Адрес")]
+        [Required(ErrorMessage = "Field must be filled")]
         public string Address { get; set; }
 
-        [Required(ErrorMessage = "Поле должно быть заполнено")]
-        [Display(Name = "Имя")]
+        [Required(ErrorMessage = "Field must be filled")]
         public string Name { get; set; }
 
-        [Required(ErrorMessage = "Поле должно быть заполнено")]
-        [Display(Name = "Номер телефона")]
+        [Required(ErrorMessage = "Field must be filled")]
+        [Display(Name = "Phone number")]
         public string PhoneNumber { get; set; }
     }
 }

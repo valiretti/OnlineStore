@@ -3,28 +3,31 @@
 @{
     ViewBag.Title = "Login";
 }
-<h2>Вход</h2>
+
+<h2>Login to your account</h2>
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
 
     <div>
-        @Html.ValidationSummary(true)
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         <input type="hidden" name="returnUrl" value="@ViewBag.returnUrl" />
         <p>
             <label>Email</label><br />
             @Html.EditorFor(x => x.Email)
-            @Html.ValidationMessageFor(model=>model.Email)
+            @Html.ValidationMessageFor(model => model.Email)
         </p>
+
         <p>
-            <label>Пароль</label><br />
+            <label>Password</label><br />
             @Html.EditorFor(x => x.Password)
-            @Html.ValidationMessageFor(model=>model.Password)
+            @Html.ValidationMessageFor(model => model.Password)
         </p>
-        <p><button type="submit">Войти</button></p>
+        <p><button class="btn btn-default" type="submit">Login</button>  <span>@Html.ActionLink("Lost your password", "LostPassword", "Account")</span></p>
     </div>
     <div>
-        <p>Если у вас нет аккаунта - @Html.ActionLink("Региcтрация", "Register", "Account")</p>
+        <p>If you don't have an account - @Html.ActionLink("Register", "Register", "Account")</p>
+
     </div>
 }
 

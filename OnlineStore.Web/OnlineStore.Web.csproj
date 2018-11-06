@@ -208,6 +208,7 @@
     <Compile Include="Models\ClientProfileViewModel.cs" />
     <Compile Include="Models\CompanyViewModel.cs" />
     <Compile Include="Models\LineItemViewModel.cs" />
+    <Compile Include="Models\LostPasswordViewModel.cs" />
     <Compile Include="Models\OrderViewModel.cs" />
     <Compile Include="Models\LoginModel.cs" />
     <Compile Include="Models\OrderViewModelForCart.cs" />
@@ -317,6 +318,8 @@
     <Content Include="Scripts\popper-utils.js.map" />
     <Content Include="Views\Account\EditProfile.cshtml" />
     <Content Include="Views\Account\EditPassword.cshtml" />
+    <Content Include="Views\Account\LostPassword.cshtml" />
+    <Content Include="Views\Home\GetCompanies.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

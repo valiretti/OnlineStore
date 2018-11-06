@@ -6,8 +6,8 @@ namespace OnlineStore.Web.Models
     {
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Поле должно быть заполнено")]
-        [Display(Name = "Категория товара")]
+        [Required(ErrorMessage = "Field must be filled")]
+        [Display(Name = "Product Category")]
         public string Name { get; set; }
     }
 }

@@ -6,8 +6,8 @@ namespace OnlineStore.Web.Models
     {
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Поле должно быть заполнено")]
-        [Display(Name = "Производитель")]
+        [Required(ErrorMessage = "Field must be filled")]
+        [Display(Name = "Manufacturer")]
         public string Name { get; set; }
     }
 }

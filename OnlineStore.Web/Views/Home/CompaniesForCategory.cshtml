@@ -6,10 +6,10 @@
         {
             <td>
                 @Html.ActionLink(item.Name, "GetCertainBrendProducts", new { id = item.Id, categoryId = ViewBag.Category })
-                @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+                @*@if (User.IsInRole("Admin") || User.IsInRole("Manager"))
                 {
                     @Html.ActionLink(" | Delete", "DeleteCompany", new { id = item.Id })
-                }
+                }*@
             </td>
         }
     </tr>

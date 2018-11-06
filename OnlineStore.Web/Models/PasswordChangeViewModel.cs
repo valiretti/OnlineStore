@@ -4,15 +4,14 @@ namespace OnlineStore.Web.Models
 {
     public class PasswordChangeViewModel
     {
-        [Required(ErrorMessage = "Поле должно быть заполнено")]
-        [Display(Name = "Пароль")]
+        [Required(ErrorMessage = "Field must be filled")]
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
-        [Required(ErrorMessage = "Поле должно быть заполнено")]
-        [Display(Name = "Повторите пароль")]
+        [Required(ErrorMessage = "Field must be filled")]
+        [Display(Name = "Confirm Password")]
         [DataType(DataType.Password)]
-        [Compare("Password", ErrorMessage = "Пароли не совпадают")]
+        [Compare("Password", ErrorMessage = "Passwords don't match")]
         public string ConfirmPassword { get; set; }
     }
 }

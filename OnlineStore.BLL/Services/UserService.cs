@@ -51,6 +51,7 @@ namespace OnlineStore.BLL.Services
                     DefaultAuthenticationTypes.ApplicationCookie);
                 return claim;
             }
+
             return claim;
         }
 
@@ -67,7 +68,6 @@ namespace OnlineStore.BLL.Services
                     Email = user.Email
                 };
             }
-
             return null;
         }
 
@@ -98,6 +98,16 @@ namespace OnlineStore.BLL.Services
         public void EditPassword(UserDto userDto, string userId)
         {
             var user = DataBase.UserManager.FindById(userId);
+            if (user != null)
+            {
+                user.PasswordHash = DataBase.UserManager.PasswordHasher.HashPassword(userDto.Password);
+                DataBase.UserManager.Update(user);
+            }
+        }
+
+        public void ResetPassword(UserDto userDto, string email)
+        {
+            var user = DataBase.UserManager.FindByEmail(email);
             if (user != null)
             {
                 user.PasswordHash = DataBase.UserManager.PasswordHasher.HashPassword(userDto.Password);

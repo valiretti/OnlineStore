@@ -34,7 +34,7 @@ namespace OnlineStore.Web.Controllers
                 ClaimsIdentity claim = await UserService.Authenticate(userDto);
                 if (claim == null)
                 {
-                    ModelState.AddModelError("", "Неверный логин или пароль.");
+                    ModelState.AddModelError("", "Wrong login or password");
                 }
                 else
                 {
@@ -75,10 +75,11 @@ namespace OnlineStore.Web.Controllers
                     PhoneNumber = model.PhoneNumber,
                     Role = "User"
                 };
+
                 string result = await UserService.Create(userDto);
                 if (result == "OK")
                     return View("SuccessfullRegister");
-                else
+                
                     ModelState.AddModelError("", result);
             }
             return View(model);
@@ -107,7 +108,7 @@ namespace OnlineStore.Web.Controllers
                 string result = await UserService.Create(userDto);
                 if (result == "OK")
                     return View("SuccessfullRegister");
-                else
+                
                     ModelState.AddModelError("", result);
             }
             return View("Register", model);
@@ -128,6 +129,7 @@ namespace OnlineStore.Web.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult EditProfile(ClientProfileViewModel model)
         {
             if (ModelState.IsValid)
@@ -148,13 +150,14 @@ namespace OnlineStore.Web.Controllers
             var user = UserService.GetUserData(User.Identity.GetUserId());
             if (user != null)
             {
-               return View();
+                return View();
             }
 
             return RedirectToAction("Index", "Home");
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult EditPassword(PasswordChangeViewModel model)
         {
             if (ModelState.IsValid)
@@ -164,6 +167,33 @@ namespace OnlineStore.Web.Controllers
                 UserService.EditPassword(userDto, User.Identity.GetUserId());
 
                 return RedirectToAction("Index", "Home");
+            }
+
+            return View(model);
+        }
+
+        [HttpGet]
+        public ActionResult LostPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult LostPassword(LostPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = UserService.GetUserData(model.Email);
+                if (user != null)
+                {
+                    var mapper = new MapperConfiguration(c => c.CreateMap<LostPasswordViewModel, UserDto>())
+                        .CreateMapper();
+                    var userDto = mapper.Map<LostPasswordViewModel, UserDto>(model);
+                    UserService.ResetPassword(userDto, user.Email);
+                }
+                
+                ModelState.AddModelError("", "User with this email doesn't exist");
             }
 
             return View(model);
