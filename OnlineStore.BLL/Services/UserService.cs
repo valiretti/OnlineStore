@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Security.Claims;
+using System.Security.Policy;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using OnlineStore.BLL.DTO;
@@ -71,6 +72,20 @@ namespace OnlineStore.BLL.Services
             return null;
         }
 
+        public UserDto GetUserByEmail(string email)
+        {
+            var user = DataBase.ClientManager.Find(c => c.Email == email).First();
+            if (user != null)
+            {
+                return new UserDto()
+                {
+                    Id = user.Id,
+                    Email = user.Email
+                };
+            }
+            return null;
+        }
+
         public void EditProfile(UserDto userDto, string userId)
         {
             var user = DataBase.UserManager.FindById(userId);
@@ -105,14 +120,27 @@ namespace OnlineStore.BLL.Services
             }
         }
 
-        public void ResetPassword(UserDto userDto, string email)
+        public void ResetPassword(UserDto userDto, string email, string token, string userId)
         {
             var user = DataBase.UserManager.FindByEmail(email);
             if (user != null)
             {
-                user.PasswordHash = DataBase.UserManager.PasswordHasher.HashPassword(userDto.Password);
-                DataBase.UserManager.Update(user);
+                DataBase.UserManager.ResetPassword(userId, token, userDto.Password);
             }
+        }
+
+        public string GeneratePasswordResetToken(string userId)
+        {
+            return DataBase.UserManager.GeneratePasswordResetToken(userId);
+        }
+
+        public void SendEmail(string userId, string body)
+        {
+            if (userId != null && body != null)
+            {
+                DataBase.UserManager.SendEmail(userId, "Reset Password", body);
+            }
+
         }
 
         public void Dispose()

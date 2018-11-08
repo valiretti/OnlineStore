@@ -12,6 +12,9 @@ namespace OnlineStore.BLL.Interfaces
         UserDto GetUserData(string id);
         void EditProfile(UserDto userDto, string userId);
         void EditPassword(UserDto userDto, string userId);
-        void ResetPassword(UserDto userDto, string email);
+        string GeneratePasswordResetToken(string userId);
+        void ResetPassword(UserDto userDto, string email, string token, string userId);
+        void SendEmail(string userId, string body);
+        UserDto GetUserByEmail(string email);
     }
 }

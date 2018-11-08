@@ -1,11 +1,14 @@
-﻿using System.Data.Entity;
+﻿using System;
+using System.Data.Entity;
+using System.Linq;
+using System.Linq.Expressions;
 using OnlineStore.DAL.EF;
 using OnlineStore.DAL.Entities;
 using OnlineStore.DAL.Interfaces;
 
 namespace OnlineStore.DAL.Repositories
 {
-   public class ClientManager : IClientManager
+    public class ClientManager : IClientManager
     {
         public ApplicationContext Database { get; set; }
         public ClientManager(ApplicationContext db)
@@ -21,7 +24,12 @@ namespace OnlineStore.DAL.Repositories
 
         public ClientProfile GetClientProfile(string id)
         {
-          return Database.ClientProfiles.Find(id);
+            return Database.ClientProfiles.Find(id);
+        }
+
+        public IQueryable<ClientProfile> Find(Expression<Func<ClientProfile, bool>> predicate)
+        {
+            return Database.ClientProfiles.Where(predicate);
         }
 
         public void Update(ClientProfile item)

@@ -1,6 +1,7 @@
 ﻿using System.Web.Mvc;
 using Autofac;
 using Autofac.Integration.Mvc;
+using Microsoft.AspNet.Identity;
 using OnlineStore.BLL.Infrastructure;
 using OnlineStore.BLL.Interfaces;
 using OnlineStore.BLL.Services;
@@ -33,7 +34,7 @@ namespace OnlineStore.Web.Util
             var container = builder.Build();
             DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
         }
-       
+
 
     }
 }

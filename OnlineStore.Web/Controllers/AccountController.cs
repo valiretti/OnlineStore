@@ -79,8 +79,8 @@ namespace OnlineStore.Web.Controllers
                 string result = await UserService.Create(userDto);
                 if (result == "OK")
                     return View("SuccessfullRegister");
-                
-                    ModelState.AddModelError("", result);
+
+                ModelState.AddModelError("", result);
             }
             return View(model);
         }
@@ -108,8 +108,8 @@ namespace OnlineStore.Web.Controllers
                 string result = await UserService.Create(userDto);
                 if (result == "OK")
                     return View("SuccessfullRegister");
-                
-                    ModelState.AddModelError("", result);
+
+                ModelState.AddModelError("", result);
             }
             return View("Register", model);
         }
@@ -184,16 +184,47 @@ namespace OnlineStore.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = UserService.GetUserData(model.Email);
+                var user = UserService.GetUserByEmail(model.Email);
+                if (user == null)
+                {
+                    ModelState.AddModelError("", "User with this email doesn't exist");
+                    return View("LostPassword");
+                }
+
+                var code = UserService.GeneratePasswordResetToken(user.Id);
+
+                var callbackUrl = Url.Action("ResetPassword", "Account",
+                    new { userId = user.Id, token = code }, protocol: Request.Url.Scheme);
+                string body = "Please reset your password by clicking here: <a href=\"" + callbackUrl + "\">link</a>";
+                UserService.SendEmail(user.Id, body);
+
+                return View("ForgotPasswordConfirmation");
+            }
+
+            return View(model);
+        }
+
+        [HttpGet]
+        public ActionResult ResetPassword(string userId, string token)
+        {
+            ViewBag.userId = userId;
+            ViewBag.token = token;
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult ResetPassword(ResetPassword model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = UserService.GetUserData(model.UserId);
                 if (user != null)
                 {
-                    var mapper = new MapperConfiguration(c => c.CreateMap<LostPasswordViewModel, UserDto>())
-                        .CreateMapper();
-                    var userDto = mapper.Map<LostPasswordViewModel, UserDto>(model);
-                    UserService.ResetPassword(userDto, user.Email);
+                    var mapper = new MapperConfiguration(c => c.CreateMap<ResetPassword, UserDto>()).CreateMapper();
+                    var userDto = mapper.Map<ResetPassword, UserDto>(model);
+                    UserService.ResetPassword(userDto, user.Email, model.Token, model.UserId);
+                    return RedirectToAction("Login");
                 }
-                
-                ModelState.AddModelError("", "User with this email doesn't exist");
             }
 
             return View(model);

@@ -10,7 +10,8 @@ namespace OnlineStore.DAL.EF
     {
         protected override void Seed(ApplicationContext context)
         {
-            var userManager = new ApplicationUserManager(new UserStore<ApplicationUser>(context));
+            var emailService = new Identity.MailKit();
+            var userManager = new ApplicationUserManager(new UserStore<ApplicationUser>(context), emailService);
 
             var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
 
