@@ -13,7 +13,8 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Name)
             
-                @Html.ActionLink(" | Delete", "DeleteCompany", new { id=item.Id })
+                @Html.ActionLink(" Delete", "DeleteCompany", new { id=item.Id })
+                @Html.ActionLink(" | Edit", "EditCompany", new { id=item.Id })
             </td>
         </tr>
     }
@@ -21,5 +22,5 @@
 </table>
 
 <div>
-    @Html.ActionLink("Back to Home page", "Index")
+    @Html.ActionLink("Back to Home page", "Index", "Home")
 </div>

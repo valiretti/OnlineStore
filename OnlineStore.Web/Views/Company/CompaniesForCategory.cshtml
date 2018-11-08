@@ -5,7 +5,7 @@
         @foreach (var item in Model)
         {
             <td>
-                @Html.ActionLink(item.Name, "GetCertainBrendProducts", new { id = item.Id, categoryId = ViewBag.Category })
+                @Html.ActionLink(item.Name, "GetCertainBrendProducts", "Product", new { id = item.Id, categoryId = ViewBag.Category }, null)
                 @*@if (User.IsInRole("Admin") || User.IsInRole("Manager"))
                 {
                     @Html.ActionLink(" | Delete", "DeleteCompany", new { id = item.Id })

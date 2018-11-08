@@ -207,7 +207,11 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\CategoryController.cs" />
+    <Compile Include="Controllers\CompanyController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\OrderController.cs" />
+    <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -296,25 +300,25 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Account\Register.cshtml" />
     <Content Include="Views\Account\Login.cshtml" />
-    <Content Include="Views\Home\AddProduct.cshtml" />
-    <Content Include="Views\Home\AddCompany.cshtml" />
-    <Content Include="Views\Home\DeleteProduct.cshtml" />
-    <Content Include="Views\Home\DeleteCompany.cshtml" />
-    <Content Include="Views\Home\GetProducts.cshtml" />
+    <Content Include="Views\Product\AddProduct.cshtml" />
+    <Content Include="Views\Company\AddCompany.cshtml" />
+    <Content Include="Views\Product\DeleteProduct.cshtml" />
+    <Content Include="Views\Company\DeleteCompany.cshtml" />
+    <Content Include="Views\Product\GetProducts.cshtml" />
     <Content Include="Views\Home\Cart.cshtml" />
-    <Content Include="Views\Home\Order.cshtml" />
-    <Content Include="Views\Home\GetOrders.cshtml" />
-    <Content Include="Views\Home\GetLineItems.cshtml" />
-    <Content Include="Views\Home\AcceptOrder.cshtml" />
-    <Content Include="Views\Home\EditOrder.cshtml" />
-    <Content Include="Views\Home\DeleteOrder.cshtml" />
+    <Content Include="Views\Order\Order.cshtml" />
+    <Content Include="Views\Order\GetOrders.cshtml" />
+    <Content Include="Views\Order\GetLineItems.cshtml" />
+    <Content Include="Views\Order\AcceptOrder.cshtml" />
+    <Content Include="Views\Order\EditOrder.cshtml" />
+    <Content Include="Views\Order\DeleteOrder.cshtml" />
     <Content Include="Views\Account\SuccessfullRegister.cshtml" />
-    <Content Include="Views\Home\DeleteLineItem.cshtml" />
-    <Content Include="Views\Home\OrderConfirmed.cshtml" />
-    <Content Include="Views\Home\OrderCanceled.cshtml" />
-    <Content Include="Views\Home\AddCategory.cshtml" />
-    <Content Include="Views\Home\DeleteCategory.cshtml" />
-    <Content Include="Views\Home\CompaniesForCategory.cshtml" />
+    <Content Include="Views\Order\DeleteLineItem.cshtml" />
+    <Content Include="Views\Order\OrderConfirmed.cshtml" />
+    <Content Include="Views\Order\OrderCanceled.cshtml" />
+    <Content Include="Views\Category\AddCategory.cshtml" />
+    <Content Include="Views\Category\DeleteCategory.cshtml" />
+    <Content Include="Views\Company\CompaniesForCategory.cshtml" />
     <Content Include="Scripts\umd\popper.min.js.map" />
     <Content Include="Scripts\umd\popper.js.map" />
     <Content Include="Scripts\umd\popper-utils.min.js.map" />
@@ -327,9 +331,11 @@
     <Content Include="Views\Account\EditProfile.cshtml" />
     <Content Include="Views\Account\EditPassword.cshtml" />
     <Content Include="Views\Account\LostPassword.cshtml" />
-    <Content Include="Views\Home\GetCompanies.cshtml" />
+    <Content Include="Views\Company\GetCompanies.cshtml" />
     <Content Include="Views\Account\ResetPassword.cshtml" />
     <Content Include="Views\Account\ForgotPasswordConfirmation.cshtml" />
+    <Content Include="Views\Company\EditCompany.cshtml" />
+    <Content Include="Views\Category\EditCategory.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

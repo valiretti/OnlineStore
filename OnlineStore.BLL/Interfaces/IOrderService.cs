@@ -23,12 +23,14 @@ namespace OnlineStore.BLL.Interfaces
         void DeleteProduct(int id);
 
         string AddCompany(CompanyDto company);
+        void EditCompany(CompanyDto company);
         void DeleteCompany(int id);
         CompanyDto GetCompany(int id);
         IEnumerable<CompanyDto> GetCompanies();
         IEnumerable<CompanyDto> GetCertainCategoryCompanies(int categoryId);
 
         string AddCategory(CategoryDto category);
+        void EditCategory(CategoryDto category);
         void DeleteCategory(int id);
         CategoryDto GetCategory(int id);
         IEnumerable<CategoryDto> GetCategories();

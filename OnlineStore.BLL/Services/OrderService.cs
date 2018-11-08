@@ -140,6 +140,15 @@ namespace OnlineStore.BLL.Services
             return "OK";
         }
 
+        public void EditCategory(CategoryDto categoryDto)
+        {
+            var category = DataBase.Categories.Get(categoryDto.Id);
+            category.Name = categoryDto.Name;
+
+            DataBase.Categories.Update(category);
+            DataBase.Save();
+        }
+
         public void DeleteCategory(int id)
         {
             var category = DataBase.Categories.Get(id);
@@ -169,7 +178,7 @@ namespace OnlineStore.BLL.Services
             return mapper.Map<IEnumerable<Category>, List<CategoryDto>>(DataBase.Categories.GetAll());
         }
         #endregion
-        
+
         #region Methods for companies
         public string AddCompany(CompanyDto companyDto)
         {
@@ -188,6 +197,15 @@ namespace OnlineStore.BLL.Services
             DataBase.Save();
 
             return "OK";
+        }
+
+        public void EditCompany(CompanyDto companyDto)
+        {
+            var company = DataBase.Companies.Get(companyDto.Id);
+            company.Name = companyDto.Name;
+
+            DataBase.Companies.Update(company);
+            DataBase.Save();
         }
 
         public IEnumerable<CompanyDto> GetCompanies()
@@ -237,43 +255,10 @@ namespace OnlineStore.BLL.Services
 
         }
 
-        
+
         #endregion
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        public UserDto GetUserData(string id)
-        {
-            var user = DataBase.ClientManager.GetClientProfile(id);
-            if (user != null)
-            {
-                var userDto = new UserDto()
-                {
-                    Id = user.Id,
-                    Name = user.Name,
-                    Email = user.Email,
-                    PhoneNumber = user.PhoneNumber,
-                    Address = user.Address,
-                };
-                return userDto;
-            }
-
-            return null;
-        }
-
+     
+        #region Methods for orders
         public void MakeOrder(OrderDto orderDto, IEnumerable<LineItemDto> lineItemDtos, string userId)
         {
             if (orderDto != null && lineItemDtos != null)
@@ -409,6 +394,26 @@ namespace OnlineStore.BLL.Services
                 DataBase.LineItems.Delete(lineItem.Id);
                 DataBase.Save();
             }
+        }
+        #endregion
+
+        public UserDto GetUserData(string id)
+        {
+            var user = DataBase.ClientManager.GetClientProfile(id);
+            if (user != null)
+            {
+                var userDto = new UserDto()
+                {
+                    Id = user.Id,
+                    Name = user.Name,
+                    Email = user.Email,
+                    PhoneNumber = user.PhoneNumber,
+                    Address = user.Address
+                };
+                return userDto;
+            }
+
+            return null;
         }
 
         public void Dispose()

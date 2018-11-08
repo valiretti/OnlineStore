@@ -1,18 +1,20 @@
-﻿@model OnlineStore.Web.Models.CategoryViewModel
+﻿@model OnlineStore.Web.Models.CompanyViewModel
 
 @{
-    ViewBag.Title = "AddCategory";
+    ViewBag.Title = "EditCompany";
 }
 
-<h2>Add product category</h2>
+<h2>Edit Company</h2>
 
-@using (Html.BeginForm()) 
+@using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
     
     <div class="form-horizontal">
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.Id)
+
         <div class="form-group">
             @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
@@ -23,12 +25,12 @@
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-default" />
+                <input type="submit" value="Save" class="btn btn-default" />
             </div>
         </div>
     </div>
 }
 
 <div>
-    @Html.ActionLink("Back to Home page", "Index")
+    @Html.ActionLink("Back to List", "GetCompanies")
 </div>

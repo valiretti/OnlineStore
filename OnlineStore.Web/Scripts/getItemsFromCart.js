@@ -83,7 +83,7 @@ var encodeHTML = (function () {
 })();
 
 function orderProduct() {
-    document.location.href = "/home/Order";
+    document.location.href = "/order/Order";
 }
 
 function totalCost(cartContent) {

@@ -8,14 +8,16 @@
     {
         <tr>
             <td>
-                @Html.ActionLink(item.Name, "GetCertainCategoryProducts", new { id = item.Id })
+                @Html.ActionLink(item.Name, "GetCertainCategoryProducts", "Product", new { id = item.Id }, null)
                 @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
                 {
-                    @Html.ActionLink(" | Delete", "DeleteCategory", new { id = item.Id })
+                    @Html.ActionLink(" | Edit", "EditCategory", "Category", new { id = item.Id }, null)
+                    @Html.ActionLink(" | Delete", "DeleteCategory", "Category", new { id = item.Id }, null)
+
                 }
 
                 @{
-                    Html.RenderAction("GetCompaniesForCategory", "Home", new { categoryId = item.Id });
+                    Html.RenderAction("GetCompaniesForCategory", "Company", new { categoryId = item.Id });
                 }
             </td>
         </tr>

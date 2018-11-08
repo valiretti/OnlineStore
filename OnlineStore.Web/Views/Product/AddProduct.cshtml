@@ -4,7 +4,7 @@
     ViewBag.Title = "AddProduct";
 }
 
-@using (Html.BeginForm("AddProduct", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+@using (Html.BeginForm("AddProduct", "Product", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.AntiForgeryToken()
 
@@ -69,5 +69,5 @@
 }
 
 <div>
-    @Html.ActionLink("Back to Home page", "Index")
+    @Html.ActionLink("Back to Home page", "Index", "Home")
 </div>
