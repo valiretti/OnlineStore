@@ -1,0 +1,13 @@
+﻿@model IEnumerable<OnlineStore.Web.Models.ProductViewModel>
+
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-md-3 col-xs-3" style="text-align: center ">
+            <a href='@Url.Action("GetCertainCategoryProducts", "Product", new {id = item.CategoryId}, null)'>
+                <img src="~/Files/Images/@item.ImagePath" height="100" >
+               <p>@item.Name</p>
+            </a>
+        </div>
+    }
+</div>

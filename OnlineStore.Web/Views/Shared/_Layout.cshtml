@@ -86,14 +86,30 @@
     </nav>
     <div class="container body-content">
         @RenderBody()
-        <hr />
-
     </div>
+    <br/>
+<footer class="container" style="background-color: gainsboro;">
+    <br/>
+        <div class="row" style="text-align: center">
+            <div class="col-lg-4">
+                <a href="#">About company</a>
+            </div>
+            <div class="col-lg-4">
+                <a href="#">Special offers</a>
+            </div>
+            <div class="col-lg-4">
+                <a href="#">Information</a>
+            </div>
+        </div>
+        <br />
+        <p align="center">© 2017–2018</p>
+    </footer>
 
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/bootstrap")
-    @RenderSection("scripts", required: false)
-    @Scripts.Render("~/scripts/cart.js")
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/bootstrap")
+@RenderSection("scripts", required: false)
+@Scripts.Render("~/scripts/cart.js")
 
 </body>
+
 </html>

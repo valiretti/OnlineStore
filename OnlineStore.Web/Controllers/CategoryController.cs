@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using AutoMapper;
 using OnlineStore.BLL.DTO;
 using OnlineStore.BLL.Interfaces;
@@ -12,11 +8,11 @@ namespace OnlineStore.Web.Controllers
 {
     public class CategoryController : Controller
     {
-        IOrderService orderService;
+        ICategoryService categoryService;
 
-        public CategoryController(IOrderService orderService)
+        public CategoryController(ICategoryService categoryService)
         {
-            this.orderService = orderService;
+            this.categoryService = categoryService;
         }
 
         [HttpGet]
@@ -35,7 +31,7 @@ namespace OnlineStore.Web.Controllers
                     Name = category.Name
                 };
 
-                var result = orderService.AddCategory(categoryDto);
+                var result = categoryService.AddCategory(categoryDto);
                 if (result == "OK")
                 {
                     return RedirectToAction("Index", "Home");
@@ -50,7 +46,7 @@ namespace OnlineStore.Web.Controllers
         [HttpGet]
         public ActionResult DeleteCategory(int id)
         {
-            CategoryDto categoryDto = orderService.GetCategory(id);
+            CategoryDto categoryDto = categoryService.GetCategory(id);
             if (categoryDto != null)
             {
                 var mapper = new MapperConfiguration(c => c.CreateMap<CategoryDto, CategoryViewModel>()).CreateMapper();
@@ -65,14 +61,14 @@ namespace OnlineStore.Web.Controllers
         [HttpPost]
         public ActionResult DeleteCategory(CategoryViewModel category)
         {
-            orderService.DeleteCategory(category.Id);
+            categoryService.DeleteCategory(category.Id);
             return RedirectToAction("Index", "Home");
         }
 
         [HttpGet]
         public ActionResult EditCategory(int id)
         {
-            CategoryDto categoryDto = orderService.GetCategory(id);
+            CategoryDto categoryDto = categoryService.GetCategory(id);
             var mapper = new MapperConfiguration(c => c.CreateMap<CategoryDto, CategoryViewModel>()).CreateMapper();
             var category = mapper.Map<CategoryDto, CategoryViewModel>(categoryDto);
 
@@ -87,7 +83,7 @@ namespace OnlineStore.Web.Controllers
                 var mapper = new MapperConfiguration(c => c.CreateMap<CategoryViewModel, CategoryDto>()).CreateMapper();
                 var category = mapper.Map<CategoryViewModel, CategoryDto>(model);
 
-                orderService.EditCategory(category);
+                categoryService.EditCategory(category);
                 return RedirectToAction("Index", "Home");
             }
 

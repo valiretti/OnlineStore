@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using System.Security.Claims;
-using System.Security.Policy;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using OnlineStore.BLL.DTO;

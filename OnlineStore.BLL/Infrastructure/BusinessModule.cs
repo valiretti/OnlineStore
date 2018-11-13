@@ -12,6 +12,11 @@ namespace OnlineStore.BLL.Infrastructure
                 .As<IIdentityUnitOfWork>()
                 .WithParameter("connectionString", "DefaultConnection")
                 .InstancePerRequest();
+
+            builder.RegisterAssemblyTypes(ThisAssembly)
+                .Where(t => t.Name.EndsWith("Service"))
+                .AsImplementedInterfaces()
+                .InstancePerRequest();
         }
     }
 }

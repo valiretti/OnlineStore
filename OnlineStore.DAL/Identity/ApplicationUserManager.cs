@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security.DataProtection;
 using OnlineStore.DAL.Entities;
@@ -12,8 +11,8 @@ namespace OnlineStore.DAL.Identity
         {
             this.EmailService = emailService;
 
-            var provider = new DpapiDataProtectionProvider("SampleAppName");
-            this.UserTokenProvider = new DataProtectorTokenProvider<ApplicationUser>(provider.Create("SampleTokenName"));
+            var provider = new DpapiDataProtectionProvider("OnlineStore");
+            this.UserTokenProvider = new DataProtectorTokenProvider<ApplicationUser>(provider.Create("PasswordReset"));
         }
     }
 }

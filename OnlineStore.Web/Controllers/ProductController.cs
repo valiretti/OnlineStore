@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using AutoMapper;
@@ -13,26 +12,45 @@ namespace OnlineStore.Web.Controllers
 {
     public class ProductController : Controller
     {
-        IOrderService orderService;
+        IProductService productService;
+        ICompanyService companyService;
+        ICategoryService categoryService;
 
-        public ProductController(IOrderService orderService)
+        public ProductController(IProductService productService, ICompanyService companyService, ICategoryService categoryService)
         {
-            this.orderService = orderService;
+            this.productService = productService;
+            this.companyService = companyService;
+            this.categoryService = categoryService;
         }
 
         public ActionResult GetProducts()
         {
-            IEnumerable<ProductDto> productDtos = orderService.GetProducts();
+            IEnumerable<ProductDto> productDtos = productService.GetProducts();
             var mapper = new MapperConfiguration(c => c.CreateMap<ProductDto, ProductViewModel>()).CreateMapper();
             var products = mapper.Map<IEnumerable<ProductDto>, List<ProductViewModel>>(productDtos);
             return View(products);
         }
 
+        public ActionResult GetAnyFourProducts()
+        {
+            IEnumerable<ProductDto> productDtos = productService.GetProducts();
+            var mapper = new MapperConfiguration(c => c.CreateMap<ProductDto, ProductViewModel>()).CreateMapper();
+            var products = mapper.Map<IEnumerable<ProductDto>, List<ProductViewModel>>(productDtos);
+            Random random = new Random();
+            var productsToView = new List<ProductViewModel>();
+            for (int i = 0; i < 4; i++)
+            {
+                productsToView.Add(products[random.Next(0, products.Count)]);
+            }
+
+            return PartialView(productsToView);
+        }
+
         [HttpGet]
         public ActionResult AddProduct()
         {
-            SelectList companies = new SelectList(orderService.GetCompanies(), "Id", "Name");
-            SelectList categories = new SelectList(orderService.GetCategories(), "Id", "Name");
+            SelectList companies = new SelectList(companyService.GetCompanies(), "Id", "Name");
+            SelectList categories = new SelectList(categoryService.GetCategories(), "Id", "Name");
             ViewBag.Categories = categories;
             ViewBag.Companies = companies;
             return View();
@@ -60,12 +78,12 @@ namespace OnlineStore.Web.Controllers
                     ImagePath = imagePath
                 };
 
-                orderService.AddProduct(productDto);
+                productService.AddProduct(productDto);
                 return RedirectToAction("GetProducts");
             }
 
-            SelectList companies = new SelectList(orderService.GetCompanies(), "Id", "Name");
-            SelectList categories = new SelectList(orderService.GetCategories(), "Id", "Name");
+            SelectList companies = new SelectList(companyService.GetCompanies(), "Id", "Name");
+            SelectList categories = new SelectList(categoryService.GetCategories(), "Id", "Name");
             ViewBag.Categories = categories;
             ViewBag.Companies = companies;
             return View(product);
@@ -73,7 +91,7 @@ namespace OnlineStore.Web.Controllers
 
         public ActionResult GetCertainBrendProducts(int id, int categoryId)
         {
-            IEnumerable<ProductDto> productDtos = orderService.GetCertainBrandProducts(id, categoryId);
+            IEnumerable<ProductDto> productDtos = productService.GetCertainBrandProducts(id, categoryId);
             var mapper = new MapperConfiguration(c => c.CreateMap<ProductDto, ProductViewModel>()).CreateMapper();
             var products = mapper.Map<IEnumerable<ProductDto>, List<ProductViewModel>>(productDtos);
             return View("GetProducts", products);
@@ -81,7 +99,7 @@ namespace OnlineStore.Web.Controllers
 
         public ActionResult GetCertainCategoryProducts(int id)
         {
-            IEnumerable<ProductDto> productDtos = orderService.GetCertainCategoryProducts(id);
+            IEnumerable<ProductDto> productDtos = productService.GetCertainCategoryProducts(id);
             var mapper = new MapperConfiguration(c => c.CreateMap<ProductDto, ProductViewModel>()).CreateMapper();
             var products = mapper.Map<IEnumerable<ProductDto>, List<ProductViewModel>>(productDtos);
             return View("GetProducts", products);
@@ -90,7 +108,7 @@ namespace OnlineStore.Web.Controllers
         [HttpGet]
         public ActionResult DeleteProduct(int id)
         {
-            ProductDto productDto = orderService.GetProduct(id);
+            ProductDto productDto = productService.GetProduct(id);
             var mapper = new MapperConfiguration(c => c.CreateMap<ProductDto, ProductViewModel>()).CreateMapper();
             var product = mapper.Map<ProductDto, ProductViewModel>(productDto);
             return View(product);
@@ -99,7 +117,7 @@ namespace OnlineStore.Web.Controllers
         [HttpPost]
         public ActionResult DeleteProduct(ProductViewModel product)
         {
-            orderService.DeleteProduct(product.Id);
+            productService.DeleteProduct(product.Id);
             return RedirectToAction("GetProducts");
         }
     }

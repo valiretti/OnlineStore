@@ -9,11 +9,11 @@ namespace OnlineStore.Web.Controllers
 {
     public class CompanyController : Controller
     {
-        IOrderService orderService;
+        ICompanyService companyService;
 
-        public CompanyController(IOrderService orderService)
+        public CompanyController(ICompanyService companyService)
         {
-            this.orderService = orderService;
+            this.companyService = companyService;
         }
 
         [HttpGet]
@@ -32,7 +32,7 @@ namespace OnlineStore.Web.Controllers
                     Name = company.Name
                 };
 
-                var result = orderService.AddCompany(companyDto);
+                var result = companyService.AddCompany(companyDto);
                 if (result == "OK")
                 {
                     return RedirectToAction("GetCompanies");
@@ -46,7 +46,7 @@ namespace OnlineStore.Web.Controllers
 
         public ActionResult GetCompanies()
         {
-            IEnumerable<CompanyDto> companyDtos = orderService.GetCompanies();
+            IEnumerable<CompanyDto> companyDtos = companyService.GetCompanies();
             var mapper = new MapperConfiguration(c => c.CreateMap<CompanyDto, CompanyViewModel>()).CreateMapper();
             var companies = mapper.Map<IEnumerable<CompanyDto>, List<CompanyViewModel>>(companyDtos);
             return View(companies);
@@ -55,7 +55,7 @@ namespace OnlineStore.Web.Controllers
         [HttpGet]
         public ActionResult DeleteCompany(int id)
         {
-            CompanyDto companyDto = orderService.GetCompany(id);
+            CompanyDto companyDto = companyService.GetCompany(id);
             if (companyDto != null)
             {
                 var mapper = new MapperConfiguration(c => c.CreateMap<CompanyDto, CompanyViewModel>()).CreateMapper();
@@ -70,13 +70,13 @@ namespace OnlineStore.Web.Controllers
         [HttpPost]
         public ActionResult DeleteCompany(CompanyViewModel company)
         {
-            orderService.DeleteCompany(company.Id);
+            companyService.DeleteCompany(company.Id);
             return RedirectToAction("GetCompanies");
         }
 
         public ActionResult GetCompaniesForCategory(int categoryId)
         {
-            IEnumerable<CompanyDto> companyDtos = orderService.GetCertainCategoryCompanies(categoryId);
+            IEnumerable<CompanyDto> companyDtos = companyService.GetCertainCategoryCompanies(categoryId);
 
             var mapper = new MapperConfiguration(c => c.CreateMap<CompanyDto, CompanyViewModel>()).CreateMapper();
             var companies = mapper.Map<IEnumerable<CompanyDto>, List<CompanyViewModel>>(companyDtos);
@@ -87,7 +87,7 @@ namespace OnlineStore.Web.Controllers
         [HttpGet]
         public ActionResult EditCompany(int id)
         {
-            CompanyDto companyDto = orderService.GetCompany(id);
+            CompanyDto companyDto = companyService.GetCompany(id);
             var mapper = new MapperConfiguration(c => c.CreateMap<CompanyDto, CompanyViewModel>()).CreateMapper();
             var company = mapper.Map<CompanyDto, CompanyViewModel>(companyDto);
 
@@ -102,7 +102,7 @@ namespace OnlineStore.Web.Controllers
                 var mapper = new MapperConfiguration(c => c.CreateMap<CompanyViewModel, CompanyDto>()).CreateMapper();
                 var company = mapper.Map<CompanyViewModel, CompanyDto>(model);
 
-                orderService.EditCompany(company);
+                companyService.EditCompany(company);
                 return RedirectToAction("GetCompanies");
             }
 

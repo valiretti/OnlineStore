@@ -1,10 +1,7 @@
 ﻿using System.Web.Mvc;
 using Autofac;
 using Autofac.Integration.Mvc;
-using Microsoft.AspNet.Identity;
 using OnlineStore.BLL.Infrastructure;
-using OnlineStore.BLL.Interfaces;
-using OnlineStore.BLL.Services;
 
 namespace OnlineStore.Web.Util
 {
@@ -16,13 +13,13 @@ namespace OnlineStore.Web.Util
 
             builder.RegisterModule<BusinessModule>();
 
-            builder.RegisterType<UserService>()
-                .As<IUserService>()
-               .InstancePerRequest();
+            //builder.RegisterType<UserService>()
+            //    .As<IUserService>()
+            //   .InstancePerRequest();
 
-            builder.RegisterType<OrderService>()
-                .As<IOrderService>()
-                .InstancePerRequest();
+            //builder.RegisterType<OrderService>()
+            //    .As<IOrderService>()
+            //    .InstancePerRequest();
 
             builder.RegisterControllers(typeof(MvcApplication).Assembly);
             builder.RegisterModelBinders(typeof(MvcApplication).Assembly);

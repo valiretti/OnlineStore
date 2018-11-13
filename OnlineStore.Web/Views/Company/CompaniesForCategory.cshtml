@@ -1,16 +1,14 @@
 ﻿@model IEnumerable<OnlineStore.Web.Models.CompanyViewModel>
 
-<table class="table table-borderless">
-    <tr>
-        @foreach (var item in Model)
-        {
-            <td>
-                @Html.ActionLink(item.Name, "GetCertainBrendProducts", "Product", new { id = item.Id, categoryId = ViewBag.Category }, null)
-                @*@if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-md-3 col-xs-3">
+            @Html.ActionLink(item.Name, "GetCertainBrendProducts", "Product", new { id = item.Id, categoryId = ViewBag.Category }, null)
+            @*@if (User.IsInRole("Admin") || User.IsInRole("Manager"))
                 {
                     @Html.ActionLink(" | Delete", "DeleteCompany", new { id = item.Id })
                 }*@
-            </td>
-        }
-    </tr>
-</table>
+        </div>
+    }
+</div>

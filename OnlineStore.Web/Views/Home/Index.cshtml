@@ -3,27 +3,41 @@
     ViewBag.Title = "Get Categories";
 }
 
-<table class="table table-borderless">
+<div class="row" style="text-align: center">
+    <br />
+    <img src="~/Files/Images/ecommerce.jpg" height="150" class="container">
+    <h3 align="center" style="font-family: monospace; color: cadetblue ">Most popular devices</h3>
+</div>
+
+@{
+    Html.RenderAction("GetAnyFourProducts", "Product");
+}
+
+<div class="row" style="text-align: center">
+    <h3 align="center" style="font-family: monospace; color: cadetblue ">Our product categories</h3>
+</div>
+<div class="row">
     @foreach (var item in Model)
     {
-        <tr>
-            <td>
-                @Html.ActionLink(item.Name, "GetCertainCategoryProducts", "Product", new { id = item.Id }, null)
-                @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
-                {
-                    @Html.ActionLink(" | Edit", "EditCategory", "Category", new { id = item.Id }, null)
-                    @Html.ActionLink(" | Delete", "DeleteCategory", "Category", new { id = item.Id }, null)
+        <div class="col-md-3 col-xs-3" style="text-align: center ">
+            @Html.ActionLink(item.Name, "GetCertainCategoryProducts", "Product", new { id = item.Id }, new { style = " border-bottom: 1px solid" })
+            @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+            {
+                @Html.ActionLink(" | Edit", "EditCategory", "Category", new { id = item.Id }, null)
+                @Html.ActionLink(" | Delete", "DeleteCategory", "Category", new { id = item.Id }, null)
 
-                }
+            }
 
-                @{
-                    Html.RenderAction("GetCompaniesForCategory", "Company", new { categoryId = item.Id });
-                }
-            </td>
-        </tr>
+            @{
+                Html.RenderAction("GetCompaniesForCategory", "Company", new { categoryId = item.Id });
+            }
+            <br />
+        </div>
     }
-</table>
-
+</div>
+<div class="row">
+   
+</div>
 
 
 

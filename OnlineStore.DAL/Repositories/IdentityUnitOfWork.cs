@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using OnlineStore.DAL.EF;
 using OnlineStore.DAL.Entities;
@@ -22,7 +21,7 @@ namespace OnlineStore.DAL.Repositories
         public IdentityUnitOfWork(string connectionString)
         {
             db = new ApplicationContext(connectionString);
-            UserManager = new ApplicationUserManager(new UserStore<ApplicationUser>(db), new Identity.MailKit());
+            UserManager = new ApplicationUserManager(new UserStore<ApplicationUser>(db), new MailKitMessageService());
             RoleManager = new ApplicationRoleManager(new RoleStore<ApplicationRole>(db));
             ClientManager = new ClientManager(db);
         }
